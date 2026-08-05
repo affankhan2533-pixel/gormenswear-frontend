@@ -72,7 +72,11 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result.success) {
-      router.push(redirectUrl);
+      if (typeof window !== "undefined") {
+        window.location.href = redirectUrl;
+      } else {
+        router.push(redirectUrl);
+      }
     } else {
       setGlobalError(result.error || "Login failed. Please try again.");
     }
