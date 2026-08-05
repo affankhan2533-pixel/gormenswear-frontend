@@ -90,7 +90,8 @@ export default function SettingsPage() {
 
       // Fetch logged in user profile
       try {
-        const res = await fetch("http://localhost:5000/api/auth/me", { credentials: "include" });
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const res = await fetch(`${baseUrl}/api/auth/me`, { credentials: "include" });
         const userJson = await res.json();
         if (userJson.success && userJson.user) {
           setAdminProfile((prev) => ({
@@ -1004,7 +1005,8 @@ export default function SettingsPage() {
                 type="button"
                 onClick={async () => {
                   try {
-                    await fetch("http://localhost:5000/api/auth/logout", { method: "POST" });
+                    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                    await fetch(`${baseUrl}/api/auth/logout`, { method: "POST" });
                   } catch (e) {}
                   setShowLogoutModal(false);
                   success("Sessions Terminated", "Logged out from all device sessions.");
