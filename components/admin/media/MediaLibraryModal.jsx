@@ -207,20 +207,36 @@ export default function MediaLibraryModal({
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const finalMediaUrl = uploadPreviewUrl || `/images/lookbook/${uploadName.toLowerCase().replace(/\s+/g, "-")}.webp`;
+      let json;
 
-      const res = await fetch(`${baseUrl}/api/media/upload`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename: `${uploadName.trim()}.${uploadFile?.name?.split(".").pop() || "webp"}`,
-          url: finalMediaUrl,
-          folder: uploadFolder,
-          altText: uploadAlt.trim() || uploadName.trim(),
-          fileType: uploadFile?.type?.startsWith("video") ? "video" : "image",
-        }),
-      });
-      const json = await res.json();
+      if (uploadFile) {
+        const formData = new FormData();
+        formData.append("file", uploadFile);
+        formData.append("filename", uploadName.trim() ? `${uploadName.trim()}.${uploadFile.name.split(".").pop()}` : uploadFile.name);
+        formData.append("folder", uploadFolder);
+        formData.append("altText", uploadAlt.trim() || uploadName.trim());
+
+        const res = await fetch(`${baseUrl}/api/media/upload-file`, {
+          method: "POST",
+          body: formData,
+        });
+        json = await res.json();
+      } else {
+        const finalMediaUrl = uploadPreviewUrl || `/images/lookbook/${uploadName.toLowerCase().replace(/\s+/g, "-")}.webp`;
+        const res = await fetch(`${baseUrl}/api/media/upload`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: `${uploadName.trim()}.webp`,
+            url: finalMediaUrl,
+            folder: uploadFolder,
+            altText: uploadAlt.trim() || uploadName.trim(),
+            fileType: "image",
+          }),
+        });
+        json = await res.json();
+      }
+
       clearInterval(timer);
       setUploadProgress(100);
 
