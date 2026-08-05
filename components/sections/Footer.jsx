@@ -78,8 +78,17 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#090909] text-[#8E8A85] pt-24 pb-16 relative overflow-hidden border-t border-white/[0.08]">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+    <footer className="bg-[#090909] text-[#8E8A85] pt-0 pb-16 relative overflow-hidden">
+      {/* Gold gradient top divider */}
+      <div
+        aria-hidden="true"
+        className="w-full h-px"
+        style={{
+          background:
+            "linear-gradient(to right, transparent 0%, rgba(200,167,106,0.4) 30%, rgba(200,167,106,0.6) 50%, rgba(200,167,106,0.4) 70%, transparent 100%)",
+        }}
+      />
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-20">
         {/* Top Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-10 pb-20 border-b border-white/[0.06]">
           {/* Brand Column */}
@@ -105,7 +114,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-9 h-9 border border-white/[0.1] flex items-center justify-center text-[#8E8A85] hover:text-[#C9A96E] hover:border-[#C9A96E] transition-all duration-300"
+                  className="w-9 h-9 rounded-full border border-white/[0.1] flex items-center justify-center text-[#8E8A85] hover:text-[#C9A96E] hover:border-[#C9A96E] hover:bg-[#C9A96E]/[0.06] transition-all duration-300"
                 >
                   <SocialIcon type={type} />
                 </a>
@@ -123,10 +132,9 @@ export default function Footer() {
                 <li key={name}>
                   <Link
                     href={href}
-                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group"
+                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group link-underline-gold"
                   >
                     <span>{name}</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#C9A96E] transition-all duration-300 group-hover:w-full" />
                   </Link>
                 </li>
               ))}
@@ -143,10 +151,9 @@ export default function Footer() {
                 <li key={name}>
                   <Link
                     href={href}
-                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group"
+                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group link-underline-gold"
                   >
                     <span>{name}</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#C9A96E] transition-all duration-300 group-hover:w-full" />
                   </Link>
                 </li>
               ))}
@@ -163,10 +170,9 @@ export default function Footer() {
                 <li key={name}>
                   <Link
                     href={href}
-                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group"
+                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group link-underline-gold"
                   >
                     <span>{name}</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#C9A96E] transition-all duration-300 group-hover:w-full" />
                   </Link>
                 </li>
               ))}
@@ -204,7 +210,7 @@ export default function Footer() {
             <button
               onClick={scrollToTop}
               aria-label="Scroll to top"
-              className="p-2.5 bg-[#121212] border border-white/[0.1] hover:border-[#C9A96E] text-[#C9A96E] transition-colors cursor-pointer"
+              className="p-2.5 bg-[#121212] border border-white/[0.1] hover:border-[#C9A96E] hover:shadow-[0_0_14px_rgba(200,167,106,0.2)] text-[#C9A96E] transition-all duration-300 rounded cursor-pointer"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>

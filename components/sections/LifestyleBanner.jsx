@@ -1,106 +1,126 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, ShieldCheck, Sparkles, CheckCircle2 } from "lucide-react";
 
 export default function LifestyleBanner() {
-  const containerRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05]);
-
   return (
-    <section
-      ref={containerRef}
-      className="py-20 sm:py-32 lg:py-36 bg-[#15181D] text-[#F5F3EF] overflow-hidden border-t border-b border-[rgba(200,167,106,0.15)] relative bg-section-secondary"
+    <section 
+      id="editorial-story"
+      className="py-16 sm:py-24 bg-[#0E1013] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-14 items-center">
+      {/* Soft Ambient Gold Lighting */}
+      <div 
+        className="absolute top-1/2 left-0 w-[550px] h-[550px] rounded-full pointer-events-none z-0 opacity-20 blur-[150px]"
+        style={{ background: "radial-gradient(circle, rgba(201, 168, 106, 0.04) 0%, transparent 70%)" }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
-          {/* Left Side: Cinematic Campaign Image (~60% width on Desktop) */}
+          {/* LEFT SIDE (DESKTOP 45% / MOBILE TEXT BELOW): Editorial Content */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="md:col-span-7 lg:col-span-7 relative rounded-[14px] overflow-hidden bg-[#1B1F25] border border-[rgba(200,167,106,0.15)] shadow-2xl group"
+            className="w-full lg:col-span-5 flex flex-col justify-center text-center lg:text-left"
           >
-            <div className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[4/5] lg:aspect-[16/10] overflow-hidden">
-              <motion.img
-                style={{ y: imageY, scale: imageScale }}
-                src="/images/lookbook/image copy 2.png"
-                alt="GOR Menswear Campaign Editorial"
-                className="w-full h-full object-cover object-center filter brightness-[0.94] contrast-[1.05] group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F1115]/80 via-transparent to-transparent opacity-70" />
+            {/* Minimal Editorial Label (No Glass Effect) */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A86A]" />
+              <span className="font-sans text-xs uppercase tracking-[0.35em] text-[#C9A86A] font-semibold">
+                EDITORIAL
+              </span>
+            </div>
+
+            {/* Main Editorial Heading */}
+            <h2 className="font-editorial text-4xl sm:text-6xl lg:text-6xl font-normal text-[#F7F5F2] tracking-tight leading-[1.06] mb-5">
+              DESIGNED <br />
+              FOR THE <br />
+              <span className="italic text-[#C9A86A]">MODERN MAN</span>
+            </h2>
+
+            {/* Body Paragraph (Constrained under 520px) */}
+            <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light leading-relaxed tracking-wide mb-8 max-w-[520px] mx-auto lg:mx-0">
+              Every piece is created to deliver effortless confidence, timeless style and everyday comfort.
+            </p>
+
+            {/* Premium Feature Points with Thin Gold Dividers */}
+            <div className="flex items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-9 text-[#B8B6B0]/90 text-[11px] uppercase tracking-[0.16em] font-sans font-medium flex-wrap">
+              <span className="flex items-center gap-1.5 text-[#F7F5F2]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#C9A86A]" />
+                Premium Fabrics
+              </span>
+              <span className="text-[#C9A86A]/40 font-light">|</span>
+              <span className="flex items-center gap-1.5 text-[#F7F5F2]">
+                <Sparkles className="w-3.5 h-3.5 text-[#C9A86A]" />
+                Modern Fits
+              </span>
+              <span className="text-[#C9A86A]/40 font-light">|</span>
+              <span className="flex items-center gap-1.5 text-[#F7F5F2]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#C9A86A]" />
+                Everyday Comfort
+              </span>
+            </div>
+
+            {/* Luxury 12px Rounded CTA Button */}
+            <div className="flex justify-center lg:justify-start">
+              <Link href="/shop" className="inline-block w-full sm:w-auto">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto h-[52px] px-8 rounded-[12px] bg-[#C9A86A] text-[#0B0B0B] font-sans text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 hover:bg-[#D4B57C] hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_20px_rgba(201,168,106,0.25)] hover:shadow-[0_8px_30px_rgba(201,168,106,0.4)] flex items-center justify-center gap-2.5 cursor-pointer"
+                >
+                  <span>Explore Collection</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+
+          </motion.div>
+
+          {/* RIGHT SIDE (DESKTOP 55% / MOBILE VIDEO FIRST): Dedicated Second Campaign Video */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full lg:col-span-7 relative"
+          >
+            {/* Natural Video Frame with 24px Radius & Subtle Border Tint */}
+            <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/10] rounded-[24px] overflow-hidden bg-[#111111] border border-[#C9A86A]/10 shadow-lg group">
               
-              <div className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-[#0F1115]/90 backdrop-blur-md border border-[rgba(200,167,106,0.2)] px-3.5 py-1.5 rounded-full flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-[#C8A76A]" />
-                <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C8A76A] font-semibold">
-                  CAMPAIGN 2026
-                </span>
+              {/* Second Cinematic Video with Slow Zoom Animation */}
+              <motion.video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster="/images/lookbook/gor-lookbook-1.webp"
+                animate={{ scale: [1, 1.03] }}
+                transition={{
+                  duration: 14,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut",
+                }}
+                className="w-full h-full object-cover filter brightness-[1.05] contrast-[1.04]"
+                style={{ objectPosition: "center 8%" }}
+              >
+                <source src="/videos/hero-campaign-2.mp4" type="video/mp4" />
+                <source src="/video.mp4/Make_more_different_angle_1080p_202607260353.mp4" type="video/mp4" />
+              </motion.video>
+
+              {/* Soft Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0B]/60 via-transparent to-transparent pointer-events-none z-10" />
+
+              {/* Subtle Refined Tag */}
+              <div className="absolute bottom-5 right-5 z-20 px-3.5 py-1.5 rounded-full bg-[#0B0B0B]/70 backdrop-blur-md border border-[#C9A86A]/25 text-[#C9A86A] text-[9px] font-sans font-semibold uppercase tracking-[0.25em] shadow-md">
+                <span>CAMPAIGN 2026</span>
               </div>
             </div>
           </motion.div>
-
-          {/* Right Side: Editorial Content (~40% width on Desktop) */}
-          <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-center text-left py-2 lg:py-6">
-            
-            <motion.span
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="font-sans text-xs uppercase tracking-[0.35em] text-[#C8A76A] font-semibold block mb-3"
-            >
-              GOR MENSWEAR
-            </motion.span>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.15 }}
-              className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-normal text-[#F5F3EF] tracking-wide leading-tight mb-6"
-            >
-              MODERN STREET <br />
-              <span className="italic text-[#C8A76A]">LUXURY</span>
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light leading-relaxed tracking-wide mb-8 max-w-lg"
-            >
-              Premium essentials designed for everyday confidence. Discover oversized tees, shirts, co-ord sets and modern menswear crafted for today&apos;s generation.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.45 }}
-            >
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-3 font-sans text-xs sm:text-sm uppercase tracking-[0.25em] text-[#C8A45D] font-semibold group relative py-2"
-              >
-                <span>Explore Collection</span>
-                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300 text-[#C8A45D]" />
-                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C8A45D]/40 scale-x-100 group-hover:scale-x-[1.1] group-hover:bg-[#C8A45D] transition-all duration-300 origin-left" />
-              </Link>
-            </motion.div>
-
-          </div>
 
         </div>
       </div>

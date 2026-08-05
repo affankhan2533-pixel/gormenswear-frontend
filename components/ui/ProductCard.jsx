@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -16,7 +16,7 @@ function WhatsAppIcon(props) {
   );
 }
 
-export default function ProductCard({ product, onQuickView, className = "" }) {
+function ProductCardComponent({ product, onQuickView, className = "" }) {
   const { wishlist, toggleWishlist } = useCart();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -24,30 +24,25 @@ export default function ProductCard({ product, onQuickView, className = "" }) {
 
   const isWishlisted = wishlist.includes(product.id || product._id);
   const img1 = product.image || product.images?.[0] || product.img1 || "/images/products/gor-codset-burgundy-alo.webp";
-  const img2 = product.images?.[1] || product.img2 || img1;
 
   const whatsappMsg = `Hi GOR Menswear,\n\nI'm interested in:\n${product.name}\n\nCan you please share availability and final price?`;
   const whatsappUrl = `https://wa.me/918691921913?text=${encodeURIComponent(whatsappMsg)}`;
 
-  // Priority Single Badge: NEW > BEST SELLER > EXCLUSIVE > LIMITED
   const displayBadge = product.badge || (product.isNew ? "NEW" : null);
-
-  // Discount percentage calculation
-  const discountPercent = product.originalPrice && product.originalPrice > product.price
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : null;
+  const discountPercent =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : null;
 
   return (
-    <motion.div
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group flex flex-col bg-[#1B1F25] border border-[rgba(200,167,106,0.15)] hover:border-[#C8A76A]/50 rounded-[14px] overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 shadow-lg hover:shadow-2xl hover:shadow-[#C8A76A]/5 relative ${className}`}
+      className={`group flex flex-col bg-[#1B1F25] border border-[rgba(200,167,106,0.15)] hover:border-[#C8A76A]/45 rounded-[14px] overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 shadow-lg hover:shadow-2xl relative ${className}`}
     >
-      {/* 1. Image Stage Container */}
-      <Link 
-        href={`/product/${product.slug || product.id || product._id}`} 
+      {/* 1. Image Stage */}
+      <Link
+        href={`/product/${product.slug || product.id || product._id}`}
         className="relative aspect-[3/4] w-full overflow-hidden bg-[#1B1F25] block shrink-0"
       >
         <Image
@@ -55,22 +50,22 @@ export default function ProductCard({ product, onQuickView, className = "" }) {
           alt={product.name || "GOR Menswear Product"}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover object-top filter brightness-[0.96] group-hover:brightness-[0.9] transition-all duration-500 ease-out group-hover:scale-[1.04]"
+          className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           loading="lazy"
         />
 
-        {/* Dark Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F1115]/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+        {/* Subtle Dark Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F1115]/80 via-transparent to-transparent opacity-60 group-hover:opacity-75 transition-opacity duration-300" />
 
-        {/* Priority Single Badge */}
+        {/* Badge */}
         {displayBadge && (
-          <span className="absolute top-2.5 left-2.5 font-sans text-[8.5px] uppercase tracking-[0.18em] bg-[#090909]/95 text-[#D86A32] px-2 py-0.5 border border-[#D86A32]/40 backdrop-blur-md font-semibold rounded-[3px]">
+          <span className="absolute top-2.5 left-2.5 font-sans text-[8.5px] uppercase tracking-[0.18em] bg-[#090909]/90 text-[#D86A32] px-2 py-0.5 border border-[#D86A32]/40 font-semibold rounded-[3px]">
             {displayBadge}
           </span>
         )}
 
-        {/* Wishlist Touch Target */}
-        <button
+        {/* Wishlist */}
+        <motion.button
           type="button"
           onClick={(e) => {
             e.preventDefault();
@@ -78,17 +73,18 @@ export default function ProductCard({ product, onQuickView, className = "" }) {
             toggleWishlist(product.id || product._id);
           }}
           aria-label="Save to wishlist"
-          className="absolute top-2 right-2 z-10 w-[44px] h-[44px] sm:w-8 sm:h-8 rounded-full bg-[#090909]/80 border border-[#2A2A2A] flex items-center justify-center text-[#F8F6F3] hover:text-[#C8A45D] active:scale-90 transition-all duration-150 backdrop-blur-md cursor-pointer"
+          whileTap={{ scale: 0.85 }}
+          className="absolute top-2 right-2 z-10 w-[36px] h-[36px] sm:w-8 sm:h-8 rounded-full bg-[#090909]/80 border border-[#2A2A2A] flex items-center justify-center text-[#F8F6F3] hover:text-[#C8A45D] transition-colors duration-150 cursor-pointer"
         >
           <Heart
             className={`w-3.5 h-3.5 transition-colors ${
               isWishlisted ? "fill-[#C8A45D] text-[#C8A45D]" : ""
             }`}
           />
-        </button>
+        </motion.button>
 
-        {/* Hover Quick View Trigger */}
-        {onQuickView && (
+        {/* Quick View Button on Hover */}
+        {onQuickView && isHovered && (
           <button
             type="button"
             onClick={(e) => {
@@ -96,41 +92,37 @@ export default function ProductCard({ product, onQuickView, className = "" }) {
               e.stopPropagation();
               onQuickView(product);
             }}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 transition-all duration-200 px-3.5 py-1.5 bg-[#090909]/90 border border-[#C8A45D]/40 text-[#F8F6F3] hover:text-[#C8A45D] font-sans text-[10px] uppercase tracking-wider font-semibold rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-lg cursor-pointer"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3.5 py-1.5 bg-[#090909]/90 border border-[#C8A45D]/40 text-[#F8F6F3] hover:text-[#C8A45D] font-sans text-[10px] uppercase tracking-wider font-semibold rounded-full flex items-center gap-1.5 shadow-lg cursor-pointer whitespace-nowrap transition-colors"
           >
             <Eye className="w-3.5 h-3.5" /> Quick View
           </button>
         )}
       </Link>
 
-      {/* 2. Content & Pricing Row */}
-      <div className="p-2.5 sm:p-3 flex flex-col justify-between flex-1 bg-[#151515]">
+      {/* 2. Content & Pricing */}
+      <div className="p-2.5 sm:p-3 flex flex-col justify-between flex-1 bg-[#14171C]">
         <div>
-          {/* Category Tag */}
-          <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-[#C8A45D] font-medium block mb-0.5">
+          <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-[#C9A86A] font-semibold block mb-0.5">
             {product.category || "SIGNATURE COLLECTION"}
           </span>
 
-          {/* Product Name */}
-          <Link href={`/product/${product.id || product._id}`}>
-            <h3 className="font-editorial text-xs sm:text-sm md:text-base font-normal text-[#F8F6F3] group-hover:text-[#C8A45D] transition-colors line-clamp-2 leading-[1.22] mb-1">
+          <Link href={`/product/${product.slug || product.id || product._id}`}>
+            <h3 className="font-editorial text-xs sm:text-sm md:text-base font-normal text-[#F7F5F2] group-hover:text-[#C9A86A] transition-colors line-clamp-2 leading-[1.22] mb-1">
               {product.name}
             </h3>
           </Link>
 
-          {/* Inline Pricing Row */}
           <div className="my-1 flex items-center justify-between gap-1">
             <div className="flex items-baseline gap-1">
-              <span className="font-sans text-xs sm:text-sm md:text-base font-bold text-[#F8F6F3] price-display">
+              <span className="font-sans text-xs sm:text-sm md:text-base font-bold text-[#F7F5F2] price-display tabular-nums">
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
-                <span className="font-sans text-[10px] sm:text-[11px] text-[#8E8A85] line-through price-display">
+                <span className="font-sans text-[10px] sm:text-[11px] text-[#B8B6B0]/60 line-through price-display tabular-nums">
                   {formatPrice(product.originalPrice)}
                 </span>
               )}
             </div>
-
             {discountPercent && (
               <span className="font-sans text-[8px] sm:text-[8.5px] bg-[#D86A32]/15 text-[#D86A32] border border-[#D86A32]/30 px-1 py-0.5 rounded font-semibold uppercase tracking-wider shrink-0">
                 {discountPercent}% OFF
@@ -140,27 +132,32 @@ export default function ProductCard({ product, onQuickView, className = "" }) {
         </div>
 
         {/* 3. Action Buttons */}
-        <div className="mt-2 pt-2 border-t border-[#2A2A2A] flex flex-row items-center gap-[6px]">
-          <Link
-            href={`/product/${product.id || product._id}`}
-            className="flex-1 min-w-0 h-[44px] rounded-[10px] sm:rounded-[12px] bg-[#C8A45D] hover:bg-[#D4B77D] text-[#090909] font-sans text-[10px] sm:text-[11px] uppercase tracking-normal sm:tracking-wider font-bold shadow-sm active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-1 px-1 sm:px-2 cursor-pointer shrink-0"
-          >
-            <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Order</span>
-          </Link>
+        <div className="mt-2.5 pt-2 border-t border-[#C9A86A]/15 flex flex-row items-center gap-2">
+          <div className="flex-1 min-w-0">
+            <Link
+              href={`/product/${product.slug || product.id || product._id}`}
+              className="w-full h-[40px] rounded-[12px] bg-[#C9A86A] hover:bg-[#D4B57C] text-[#0E1013] font-sans text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-colors duration-150 flex items-center justify-center gap-1 px-1 sm:px-2 cursor-pointer shrink-0"
+            >
+              <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Order</span>
+            </Link>
+          </div>
 
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 min-w-0 h-[44px] rounded-[10px] sm:rounded-[12px] bg-transparent border border-[#C8A45D]/50 text-[#F8F6F3] hover:bg-[#25D366]/10 hover:border-[#25D366] hover:text-[#25D366] font-sans text-[9.5px] sm:text-[11px] uppercase tracking-normal sm:tracking-wider font-semibold active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-1 px-1 sm:px-2 cursor-pointer group/wa shrink-0"
+            className="flex-1 min-w-0 h-[40px] rounded-[12px] bg-transparent border border-[#C9A86A]/40 text-[#F7F5F2] hover:bg-[#25D366]/10 hover:border-[#25D366] hover:text-[#25D366] font-sans text-[9.5px] sm:text-[11px] uppercase tracking-wider font-semibold transition-all duration-150 flex items-center justify-center gap-1 px-1 sm:px-2 cursor-pointer group/wa shrink-0"
           >
-            <WhatsAppIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C8A45D] group-hover/wa:text-[#25D366] transition-colors shrink-0" />
+            <WhatsAppIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C9A86A] group-hover/wa:text-[#25D366] transition-colors shrink-0" />
             <span className="truncate">WhatsApp</span>
           </a>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
+
+const ProductCard = memo(ProductCardComponent);
+export default ProductCard;

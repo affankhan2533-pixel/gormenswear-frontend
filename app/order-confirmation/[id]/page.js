@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -13,6 +14,7 @@ import {
   Clock,
   Mail,
   Check,
+  Sparkles,
 } from "lucide-react";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
@@ -29,7 +31,6 @@ function WhatsAppIcon(props) {
   );
 }
 
-// 4 Featured Recommendation Items
 const RECOMMENDED_4_ITEMS = [
   {
     id: "gor-codset-1",
@@ -76,18 +77,17 @@ export default function OrderConfirmationPage({ params }) {
           setDbOrder(json.order);
         }
       })
-      .catch((err) => console.warn("Could not fetch real order:", err.message))
+      .catch((err) => console.warn("Could not fetch order:", err.message))
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Formatted Order Date & Delivery window
   const orderDateStr = dbOrder?.createdAt
     ? new Date(dbOrder.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   const estimatedDelivery = dbOrder?.createdAt
-    ? new Date(new Date(dbOrder.createdAt).getTime() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
-    : new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    ? new Date(new Date(dbOrder.createdAt).getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    : new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
   const handleDownloadInvoice = () => {
     window.print();
@@ -119,7 +119,7 @@ export default function OrderConfirmationPage({ params }) {
   const totalAmount = dbOrder?.totalAmount !== undefined ? dbOrder.totalAmount : 900;
   const customerName = dbOrder?.customerName || "Marcus Vance";
   const shippingAddr = dbOrder?.shippingAddress?.address || "740 Park Avenue, Apt 14B, Mayfair, London";
-  const paymentMethodStr = dbOrder?.paymentMethod || "Cash on Delivery (COD)";
+  const paymentMethodStr = dbOrder?.paymentMethod || "Instant UPI";
   const paymentStatusStr = dbOrder?.paymentStatus || "Paid";
 
   return (
@@ -127,76 +127,77 @@ export default function OrderConfirmationPage({ params }) {
       <NoiseOverlay />
       <Navbar />
 
-      <main className="min-h-screen bg-[#090909] text-[#F8F6F3] pt-24 pb-24 relative overflow-hidden">
-        {/* Subtle Champagne Gold Light Effect */}
+      <main className="min-h-screen bg-[#0B0B0B] text-[#F7F5F2] pt-24 pb-24 relative overflow-hidden select-none">
+        {/* Glow Effect */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#C8A45D]/5 rounded-full blur-[140px]" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#C9A86A]/5 rounded-full blur-[140px]" />
         </div>
 
-        <Container className="relative z-10">
+        <Container className="relative z-10 max-w-[1200px]">
+          
           {/* ── 1. SUCCESS HERO SECTION ── */}
           <div className="max-w-3xl mx-auto text-center mb-12">
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="w-20 h-20 rounded-full bg-[#C8A45D]/15 border-2 border-[#C8A45D] flex items-center justify-center text-[#C8A45D] mx-auto mb-6 shadow-2xl ring-8 ring-[#C8A45D]/10"
+              className="w-20 h-20 rounded-full bg-[#C9A86A]/15 border-2 border-[#C9A86A] flex items-center justify-center text-[#C9A86A] mx-auto mb-6 shadow-2xl ring-8 ring-[#C9A86A]/10"
             >
               <CheckCircle2 className="w-10 h-10" />
             </motion.div>
 
-            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#C8A45D] font-bold block mb-2">
-              ORDER SUCCESS
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#C9A86A] font-bold block mb-2">
+              PURCHASE SUCCESSFUL
             </span>
 
-            <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-normal text-[#F8F6F3] tracking-tight leading-[1.08] mb-3">
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal text-[#F7F5F2] tracking-tight leading-[1.08] mb-3">
               Order Confirmed
             </h1>
 
-            <p className="font-sans text-xs sm:text-sm text-[#8E8A85] font-light max-w-lg mx-auto leading-relaxed">
-              Your order has been successfully recorded in MongoDB. We’ll notify you as it moves through express preparation and dispatch.
+            <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light max-w-lg mx-auto leading-relaxed">
+              Your order has been recorded. We have sent a receipt to your email and are preparing your Atelier garments for express delivery.
             </p>
 
-            <div className="mt-4 inline-flex items-center gap-2 bg-[#151515] border border-[#2A2A2A] px-4 py-1.5 rounded-full text-xs font-sans">
-              <span className="text-[#8E8A85]">Order Reference:</span>
-              <span className="text-[#C8A45D] font-mono font-bold">{displayOrderNo}</span>
-              <span className="text-[#8E8A85]">• {orderDateStr}</span>
+            <div className="mt-5 inline-flex items-center gap-2 bg-[#111111] border border-[#2A2A2A] px-4 py-2 rounded-full text-xs font-sans">
+              <span className="text-[#B8B6B0]">Order Reference:</span>
+              <span className="text-[#C9A86A] font-mono font-bold">{displayOrderNo}</span>
+              <span className="text-[#B8B6B0]">• {orderDateStr}</span>
             </div>
           </div>
 
-          {/* ── 2. UPGRADED DELIVERY STATUS TIMELINE ── */}
-          <div className="max-w-4xl mx-auto bg-[#151515] border border-[#2A2A2A] rounded-[16px] p-6 sm:p-8 mb-12 shadow-xl">
-            <h3 className="font-editorial text-2xl font-normal text-[#F8F6F3] mb-6 text-center sm:text-left">
-              Delivery Timeline
+          {/* ── 2. DELIVERY TIMELINE ── */}
+          <div className="max-w-4xl mx-auto bg-[#111111] border border-[#2A2A2A] rounded-2xl p-6 sm:p-8 mb-12 shadow-xl">
+            <h3 className="font-serif text-2xl font-normal text-[#F7F5F2] mb-6 text-center sm:text-left">
+              Delivery Timeline Status
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
               {[
-                { status: "Order Confirmed", desc: "Order recorded.", active: true, completed: true, icon: Check },
-                { status: "Preparing", desc: "Packing items.", active: true, completed: false, icon: Package },
-                { status: "Shipped", desc: "Express tracking.", active: false, completed: false, icon: Truck },
-                { status: "Out for Delivery", desc: "On the way.", active: false, completed: false, icon: MapPin },
+                { status: "Order Placed", desc: "Confirmed & logged.", active: true, completed: true, icon: Check },
+                { status: "Preparing", desc: "Hand-inspecting.", active: true, completed: false, icon: Package },
+                { status: "Shipped", desc: "Air courier transit.", active: false, completed: false, icon: Truck },
+                { status: "Out for Delivery", desc: "Local courier dispatch.", active: false, completed: false, icon: MapPin },
                 { status: "Delivered", desc: "Enjoy your garments.", active: false, completed: false, icon: CheckCircle2 },
               ].map((step, idx) => {
                 const IconComponent = step.icon;
                 return (
-                  <div key={idx} className="flex flex-col items-center text-center space-y-2 relative">
+                  <div key={idx} className="flex flex-col items-center text-center space-y-2">
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ${
                         step.completed
-                          ? "bg-[#C8A45D] text-[#090909] border-[#C8A45D] shadow-md"
+                          ? "bg-[#C9A86A] text-[#0B0B0B] border-[#C9A86A] shadow-md"
                           : step.active
-                          ? "bg-[#090909] text-[#C8A45D] border-[#C8A45D] ring-4 ring-[#C8A45D]/20 animate-pulse"
-                          : "bg-[#090909] text-[#8E8A85] border-[#2A2A2A]"
+                          ? "bg-[#0B0B0B] text-[#C9A86A] border-[#C9A86A] ring-4 ring-[#C9A86A]/20 animate-pulse"
+                          : "bg-[#0B0B0B] text-[#B8B6B0] border-[#2A2A2A]"
                       }`}
                     >
                       <IconComponent className="w-4 h-4" />
                     </div>
 
-                    <span className={`font-sans text-xs font-bold ${step.active || step.completed ? "text-[#F8F6F3]" : "text-[#8E8A85]"}`}>
+                    <span className={`font-sans text-xs font-bold ${step.active || step.completed ? "text-[#F7F5F2]" : "text-[#B8B6B0]"}`}>
                       {step.status}
                     </span>
-                    <p className="font-sans text-[10px] text-[#8E8A85] font-light leading-snug max-w-[130px]">
+                    <p className="font-sans text-[10px] text-[#B8B6B0] font-light max-w-[130px]">
                       {step.desc}
                     </p>
                   </div>
@@ -205,64 +206,33 @@ export default function OrderConfirmationPage({ params }) {
             </div>
           </div>
 
-          {/* ── 3. ORDER DETAILS CARDS GRID (4 CARDS) ── */}
-          <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            {/* Card 1: Order Number */}
-            <div className="p-5 bg-[#151515] border border-[#2A2A2A] rounded-[12px] space-y-1">
-              <span className="font-sans text-[10px] uppercase tracking-wider text-[#C8A45D] font-semibold">ORDER NUMBER</span>
-              <p className="font-mono text-sm font-bold text-[#F8F6F3]">{displayOrderNo}</p>
-              <p className="font-sans text-[11px] text-[#8E8A85]">Placed on {orderDateStr}</p>
-            </div>
-
-            {/* Card 2: Payment */}
-            <div className="p-5 bg-[#151515] border border-[#2A2A2A] rounded-[12px] space-y-1">
-              <span className="font-sans text-[10px] uppercase tracking-wider text-[#C8A45D] font-semibold">PAYMENT METHOD</span>
-              <p className="font-sans text-xs font-bold text-[#F8F6F3] truncate">{paymentMethodStr}</p>
-              <p className={`font-sans text-[11px] font-semibold ${paymentStatusStr === "Paid" ? "text-emerald-400" : "text-amber-400"}`}>
-                Status: {paymentStatusStr}
-              </p>
-            </div>
-
-            {/* Card 3: Delivery Address */}
-            <div className="p-5 bg-[#151515] border border-[#2A2A2A] rounded-[12px] space-y-1">
-              <span className="font-sans text-[10px] uppercase tracking-wider text-[#C8A45D] font-semibold">DELIVERY ADDRESS</span>
-              <p className="font-sans text-xs font-bold text-[#F8F6F3] truncate">{customerName}</p>
-              <p className="font-sans text-[11px] text-[#8E8A85] truncate font-light">{shippingAddr}</p>
-            </div>
-
-            {/* Card 4: Total & Arrival */}
-            <div className="p-5 bg-[#151515] border border-[#2A2A2A] rounded-[12px] space-y-1">
-              <span className="font-sans text-[10px] uppercase tracking-wider text-[#C8A45D] font-semibold">ESTIMATED ARRIVAL</span>
-              <p className="font-sans text-sm font-bold text-[#C8A45D]">{estimatedDelivery}</p>
-              <p className="font-sans text-[11px] text-[#8E8A85]">Standard Express Courier</p>
-            </div>
-          </div>
-
-          {/* ── 4. ORDER SUMMARY & ACTION BUTTONS ── */}
-          <div className="max-w-4xl mx-auto bg-[#151515] border border-[#2A2A2A] rounded-[16px] p-6 sm:p-8 mb-12 space-y-6 shadow-xl">
+          {/* ── 3. ORDER SUMMARY & PURCHASED ITEMS ── */}
+          <div className="max-w-4xl mx-auto bg-[#111111] border border-[#2A2A2A] rounded-2xl p-6 sm:p-8 mb-12 space-y-6 shadow-xl">
             <div className="flex justify-between items-center border-b border-[#2A2A2A] pb-4">
-              <h3 className="font-editorial text-2xl font-normal text-[#F8F6F3]">Purchased Items</h3>
-              <span className="font-sans text-xs text-[#C8A45D] font-semibold">Insured Package</span>
+              <h3 className="font-serif text-2xl font-normal text-[#F7F5F2]">Purchased Garments</h3>
+              <span className="font-sans text-xs text-[#C9A86A] font-bold">Insured Express Package</span>
             </div>
 
-            {/* Purchased Items List */}
             <div className="space-y-4">
               {displayItems.map((item, index) => (
-                <div key={item.productId || index} className="flex items-center gap-4 bg-[#090909] p-3.5 border border-[#2A2A2A] rounded-[12px]">
-                  <img
-                    src={item.image || "/images/lookbook/gor-lookbook-1.webp"}
-                    alt={item.name}
-                    className="w-16 aspect-[3/4] object-cover object-top rounded-[6px] border border-[#2A2A2A] shrink-0"
-                    onError={(e) => { e.target.style.display = "none"; }}
-                  />
+                <div key={item.productId || index} className="flex items-center gap-4 bg-[#0B0B0B] p-3.5 border border-[#2A2A2A] rounded-xl">
+                  <div className="relative w-16 aspect-[3/4] rounded-lg overflow-hidden border border-[#2A2A2A] shrink-0 bg-[#0B0B0B]">
+                    <Image
+                      src={item.image || "/images/products/gor-codset-burgundy-alo.webp"}
+                      alt={item.name}
+                      fill
+                      unoptimized
+                      className="object-cover object-top"
+                    />
+                  </div>
                   <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <h4 className="font-editorial text-base text-[#F8F6F3] truncate">{item.name}</h4>
-                      <span className="font-sans text-xs text-[#8E8A85]">
-                        SKU: <strong className="text-[#F8F6F3]">{item.sku || "GOR-SKU"}</strong> | Qty: {item.quantity || 1}
+                      <h4 className="font-serif text-base text-[#F7F5F2] truncate">{item.name}</h4>
+                      <span className="font-sans text-xs text-[#B8B6B0]">
+                        Size: <strong className="text-[#F7F5F2]">{item.size || "M"}</strong> | Qty: {item.quantity || 1}
                       </span>
                     </div>
-                    <span className="font-sans text-sm font-bold text-[#C8A45D] price-display">
+                    <span className="font-sans text-sm font-bold text-[#C9A86A] price-display">
                       {formatPrice(item.itemTotal || item.price * item.quantity)}
                     </span>
                   </div>
@@ -271,10 +241,10 @@ export default function OrderConfirmationPage({ params }) {
             </div>
 
             {/* Financial Summary */}
-            <div className="pt-4 border-t border-[#2A2A2A] space-y-2 text-xs font-sans text-[#8E8A85]">
+            <div className="pt-4 border-t border-[#2A2A2A] space-y-2 text-xs font-sans text-[#B8B6B0]">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="text-[#F8F6F3] font-semibold price-display">{formatPrice(subtotal)}</span>
+                <span className="text-[#F7F5F2] font-semibold price-display">{formatPrice(subtotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-emerald-400">
@@ -283,14 +253,14 @@ export default function OrderConfirmationPage({ params }) {
                 </div>
               )}
               <div className="flex justify-between">
-                <span>Insured Express Shipping</span>
-                <span className="text-[#F8F6F3] font-semibold">
+                <span>Express Courier Shipping</span>
+                <span className="text-[#F7F5F2] font-semibold">
                   {shippingFee > 0 ? formatPrice(shippingFee) : "Complimentary"}
                 </span>
               </div>
-              <div className="flex justify-between text-base font-bold text-[#F8F6F3] pt-3 border-t border-[#2A2A2A]">
-                <span>Total Amount Paid</span>
-                <span className="text-[#C8A45D] price-display">{formatPrice(totalAmount)}</span>
+              <div className="flex justify-between text-base font-bold text-[#F7F5F2] pt-3 border-t border-[#2A2A2A]">
+                <span>Total Paid</span>
+                <span className="text-[#C9A86A] price-display">{formatPrice(totalAmount)}</span>
               </div>
             </div>
 
@@ -298,15 +268,15 @@ export default function OrderConfirmationPage({ params }) {
             <div className="pt-4 flex flex-col sm:flex-row items-center gap-3 border-t border-[#2A2A2A]">
               <Link
                 href="/account"
-                className="w-full sm:flex-1 h-[48px] rounded-[10px] bg-[#C8A45D] hover:bg-[#D4B77D] text-[#090909] font-sans text-xs uppercase tracking-wider font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:flex-1 h-12 bg-[#C9A86A] hover:bg-[#D4B57C] text-[#0B0B0B] font-sans text-xs uppercase tracking-widest font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98"
               >
-                <span>Track Order</span>
+                <span>Track Order Status</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
               <Link
                 href="/shop"
-                className="w-full sm:flex-1 h-[48px] rounded-[10px] bg-[#090909] border border-[#2A2A2A] hover:border-[#C8A45D] text-[#F8F6F3] font-sans text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center cursor-pointer"
+                className="w-full sm:flex-1 h-12 bg-[#0B0B0B] border border-[#2A2A2A] hover:border-[#C9A86A] text-[#F7F5F2] font-sans text-xs uppercase tracking-widest font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer"
               >
                 Continue Shopping
               </Link>
@@ -314,77 +284,37 @@ export default function OrderConfirmationPage({ params }) {
               <button
                 type="button"
                 onClick={handleDownloadInvoice}
-                className="w-full sm:w-auto px-5 h-[48px] bg-[#090909] border border-[#2A2A2A] hover:border-[#C8A45D] text-[#C8A45D] font-sans text-xs uppercase tracking-wider font-semibold rounded-[10px] flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto px-6 h-12 bg-[#0B0B0B] border border-[#2A2A2A] hover:border-[#C9A86A] text-[#C9A86A] font-sans text-xs uppercase tracking-widest font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors"
               >
                 <Download className="w-4 h-4" />
-                <span>Download Invoice</span>
+                <span>Invoice</span>
               </button>
             </div>
           </div>
 
-          {/* ── 5. CUSTOMER SUPPORT CARDS ── */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <h3 className="font-editorial text-2xl font-normal text-[#F8F6F3] mb-4 text-center sm:text-left">
-              Need Assistance With Your Order?
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <a
-                href="https://wa.me/918691921913?text=Hi%20GOR%20Support,%20I%20need%20help%20with%20my%20order"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-5 bg-[#151515] border border-[#2A2A2A] hover:border-[#25D366] rounded-[12px] flex items-center gap-3 transition-colors cursor-pointer group/wa"
-              >
-                <WhatsAppIcon className="w-6 h-6 text-[#C8A45D] group-hover/wa:text-[#25D366] transition-colors" />
-                <div>
-                  <h4 className="font-sans text-xs font-bold text-[#F8F6F3]">WhatsApp Support</h4>
-                  <p className="font-sans text-[10px] text-[#8E8A85]">Instant 24/7 Agent Chat</p>
-                </div>
-              </a>
-
-              <a
-                href="mailto:support@gor.com"
-                className="p-5 bg-[#151515] border border-[#2A2A2A] hover:border-[#C8A45D] rounded-[12px] flex items-center gap-3 transition-colors cursor-pointer"
-              >
-                <Mail className="w-6 h-6 text-[#C8A45D]" />
-                <div>
-                  <h4 className="font-sans text-xs font-bold text-[#F8F6F3]">Email Support</h4>
-                  <p className="font-sans text-[10px] text-[#8E8A85]">support@gormenswear.com</p>
-                </div>
-              </a>
-
-              <div className="p-5 bg-[#151515] border border-[#2A2A2A] rounded-[12px] flex items-center gap-3">
-                <Clock className="w-6 h-6 text-[#C8A45D]" />
-                <div>
-                  <h4 className="font-sans text-xs font-bold text-[#F8F6F3]">Business Hours</h4>
-                  <p className="font-sans text-[10px] text-[#8E8A85]">Mon – Sat: 10:00 – 19:00 IST</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── 6. RECOMMENDED FOR YOU ── */}
+          {/* ── 4. RECOMMENDED PRODUCTS RAIL ── */}
           <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex justify-between items-end">
               <div>
-                <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#C8A45D] font-bold block mb-1">
-                  RECOMMENDED FOR YOU
+                <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#C9A86A] font-bold block mb-1 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> YOU MAY ALSO LIKE
                 </span>
-                <h2 className="font-editorial text-3xl font-normal text-[#F8F6F3]">
-                  You May Also Like
+                <h2 className="font-serif text-3xl font-normal text-[#F7F5F2]">
+                  Recommended Atelier Garments
                 </h2>
               </div>
-              <Link href="/shop" className="font-sans text-xs uppercase tracking-wider text-[#C8A45D] hover:underline font-semibold">
-                View All Catalog →
+              <Link href="/shop" className="font-sans text-xs uppercase tracking-wider text-[#C9A86A] hover:underline font-bold">
+                View Catalog →
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {RECOMMENDED_4_ITEMS.map((item) => (
                 <ProductCard key={item.id} product={item} />
               ))}
             </div>
           </div>
+
         </Container>
       </main>
 

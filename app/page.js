@@ -1,21 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Preloader from "@/components/ui/Preloader";
 import Navbar from "@/components/sections/Navbar";
 import Hero from "@/components/sections/Hero";
 import Categories from "@/components/sections/Categories";
-import FeaturedCollection from "@/components/sections/FeaturedCollection";
-import CustomerStories from "@/components/sections/CustomerStories";
-import NewArrivals from "@/components/sections/NewArrivals";
-import LifestyleBanner from "@/components/sections/LifestyleBanner";
-import BrandStory from "@/components/sections/BrandStory";
-import TrendingSlider from "@/components/sections/TrendingSlider";
-import WhyGOR from "@/components/sections/WhyGOR";
-import InstagramFeed from "@/components/sections/InstagramFeed";
-import Newsletter from "@/components/sections/Newsletter";
-import Footer from "@/components/sections/Footer";
-import CartDrawer from "@/components/ui/CartDrawer";
 import { useCart } from "@/context/CartContext";
+
+// Dynamic Code-Splitting for Below-the-Fold Homepage Sections
+const LifestyleBanner = dynamic(() => import("@/components/sections/LifestyleBanner"), { ssr: true });
+const NewArrivals = dynamic(() => import("@/components/sections/NewArrivals"), { ssr: true });
+const FeaturedCollection = dynamic(() => import("@/components/sections/FeaturedCollection"), { ssr: true });
+const BrandStory = dynamic(() => import("@/components/sections/BrandStory"), { ssr: true });
+const CustomerStories = dynamic(() => import("@/components/sections/CustomerStories"), { ssr: true });
+const TrendingSlider = dynamic(() => import("@/components/sections/TrendingSlider"), { ssr: true });
+const WhyGOR = dynamic(() => import("@/components/sections/WhyGOR"), { ssr: true });
+const ShopTheLook = dynamic(() => import("@/components/sections/ShopTheLook"), { ssr: true });
+const InstagramFeed = dynamic(() => import("@/components/sections/InstagramFeed"), { ssr: true });
+const Newsletter = dynamic(() => import("@/components/sections/Newsletter"), { ssr: true });
+const Footer = dynamic(() => import("@/components/sections/Footer"), { ssr: true });
+const CartDrawer = dynamic(() => import("@/components/ui/CartDrawer"), { ssr: false });
 
 export default function Home() {
   const { addToCart } = useCart();
@@ -30,26 +34,26 @@ export default function Home() {
 
       {/* Main Editorial Homepage Sequence */}
       <main className="flex-1 w-full relative bg-[#080808]">
-        {/* 1. Hero */}
+        {/* 1. Hero (Video 1) */}
         <Hero />
 
         {/* 2. Shop by Category */}
         <Categories />
 
-        {/* 3. Lifestyle Banner */}
+        {/* 3. Editorial Brand Story (Video 2) */}
         <LifestyleBanner />
 
-        {/* 4. Brand Story */}
-        <BrandStory />
+        {/* 4. New Arrivals */}
+        <NewArrivals onAddToCart={(product) => addToCart(product)} />
 
-        {/* 5. Featured Collection */}
+        {/* 5. Featured Collections */}
         <FeaturedCollection />
 
-        {/* 6. Customer Stories & Social Proof */}
-        <CustomerStories />
+        {/* 6. Brand Story & Craftsmanship */}
+        <BrandStory />
 
-        {/* 7. New Arrivals */}
-        <NewArrivals onAddToCart={(product) => addToCart(product)} />
+        {/* 7. Customer Stories & Social Proof */}
+        <CustomerStories />
 
         {/* 8. Trending Now */}
         <TrendingSlider />
@@ -57,17 +61,20 @@ export default function Home() {
         {/* 9. Why GOR */}
         <WhyGOR />
 
-        {/* 10. Instagram Gallery */}
+        {/* 10. Shop the Look (Placed right after Why GOR) */}
+        <ShopTheLook />
+
+        {/* 11. Instagram Gallery */}
         <InstagramFeed />
 
-        {/* 11. Newsletter */}
+        {/* 12. Newsletter */}
         <Newsletter />
       </main>
 
       {/* Slide-over Cart Drawer */}
       <CartDrawer />
 
-      {/* 12. Footer */}
+      {/* 13. Footer */}
       <Footer />
     </>
   );

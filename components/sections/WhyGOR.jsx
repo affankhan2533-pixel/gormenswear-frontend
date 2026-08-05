@@ -1,107 +1,105 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ShieldCheck, Truck, RefreshCw, MessageSquare } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ShieldCheck, Crown, Truck, RefreshCw } from "lucide-react";
+import { BlurReveal, Stagger, ScaleStaggerItem } from "@/components/ui/Motion";
+import { EASING, DURATION } from "@/lib/motion";
 
 const FEATURES = [
   {
+    id: "premium-fabrics",
     icon: ShieldCheck,
-    title: "Authentic Premium Quality",
-    subtitle: "Artisanal Craftsmanship",
-    description: "Direct-to-consumer luxury menswear built with mulberry silks and biella wools.",
-    accentColor: "border-[#315DA8]/40 text-[#315DA8]",
+    title: "Premium Fabrics",
+    description: "Thoughtfully selected cottons, linen blends, and high-density knits built for daily wear.",
   },
   {
+    id: "modern-fit",
+    icon: Crown,
+    title: "Modern Fit",
+    description: "Tailored for confidence. Fluid drapes, grandad collars, and effortless silhouettes.",
+  },
+  {
+    id: "fast-delivery",
     icon: Truck,
-    title: "Fast Priority Shipping",
-    subtitle: "Express Delivery",
-    description: "Insured priority dispatch with real-time tracking straight to your doorstep.",
-    accentColor: "border-[#C8A45D]/40 text-[#C8A45D]",
+    title: "Fast Delivery",
+    description: "Reliable nationwide shipping with real-time tracking and luxury packaging.",
   },
   {
+    id: "easy-returns",
     icon: RefreshCw,
-    title: "Hassle-Free Returns",
-    subtitle: "7-Day Exchanges",
-    description: "Seamless exchanges and guaranteed satisfaction with dedicated care.",
-    accentColor: "border-[#D86A32]/40 text-[#D86A32]",
-  },
-  {
-    icon: MessageSquare,
-    title: "WhatsApp Stylist Concierge",
-    subtitle: "24/7 Assistance",
-    description: "Direct personal styling, instant sizing guidance, and real-time support.",
-    accentColor: "border-[#25D366]/40 text-[#25D366]",
+    title: "Easy Returns",
+    description: "Hassle-free returns and exchange options with convenient doorstep support.",
   },
 ];
 
 export default function WhyGOR() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <section className="py-20 sm:py-28 bg-[#151515] border-t border-b border-[#2A2A2A] text-[#F8F6F3] relative overflow-hidden">
-      {/* Gentle Radial Gradient Depth */}
-      <div className="absolute inset-0 bg-radial-gradient pointer-events-none opacity-40"
-           style={{ background: "radial-gradient(circle at 50% 0%, rgba(49, 93, 168, 0.05) 0%, transparent 70%)" }} />
+    <section
+      id="why-gor"
+      className="py-16 sm:py-24 bg-[#1B1F25] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]"
+    >
+      {/* Ambient Background */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0 opacity-20"
+        style={{ background: "radial-gradient(circle at 50% 50%, rgba(201, 168, 106, 0.04) 0%, transparent 70%)" }}
+      />
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none z-0 opacity-10 blur-[160px]"
+        style={{ background: "radial-gradient(circle, #C9A86A 0%, transparent 70%)" }}
+      />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-        
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <span className="font-sans text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#C8A45D] font-medium block mb-2">
-            WHY SHOP WITH GOR
-          </span>
-          <h2 className="font-editorial text-3xl sm:text-5xl font-normal text-[#F8F6F3] tracking-tight">
-            The Modern Fashion Experience
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+
+        {/* Header */}
+        <BlurReveal className="text-center max-w-2xl mx-auto mb-16 sm:mb-24">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C9A86A]" />
+            <span className="font-sans text-xs uppercase tracking-[0.35em] text-[#C9A86A] font-semibold">
+              WHY GOR
+            </span>
+          </div>
+          <h2 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-normal text-[#F7F5F2] tracking-tight leading-[1.05] mb-4">
+            CRAFTED FOR MODERN LIVING
           </h2>
-        </motion.div>
+          <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light tracking-[0.18em] leading-relaxed uppercase max-w-lg mx-auto">
+            Every garment is designed to combine premium quality, refined style and everyday comfort.
+          </p>
+        </BlurReveal>
 
-        {/* 4 Feature Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {FEATURES.map((feat, idx) => {
+        {/* Feature Cards — staggered */}
+        <Stagger staggerDelay={0.09} className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          {FEATURES.map((feat) => {
             const Icon = feat.icon;
             return (
-              <motion.div
-                key={feat.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{
-                  duration: 0.6,
-                  delay: idx * 0.1,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="group p-6 sm:p-8 bg-[#090909] border border-[#2A2A2A] hover:border-[#C8A45D]/50 rounded-[12px] transition-all duration-300 hover:-translate-y-1.5 shadow-lg hover:shadow-2xl flex flex-col justify-between"
-              >
-                <div>
-                  <div className="w-12 h-12 rounded-full bg-[#151515] border border-[#2A2A2A] group-hover:border-[#C8A45D]/40 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110">
-                    <Icon className="w-5 h-5 text-[#C8A45D]" />
+              <ScaleStaggerItem key={feat.id}>
+                <div className="group p-6 sm:p-8 bg-[#111111] border border-[#C9A86A]/15 hover:border-[#C9A86A]/40 rounded-[20px] transition-all duration-300 ease-out hover:-translate-y-1 shadow-md flex flex-col justify-between h-full">
+                  <div>
+                    <div className="mb-6 flex items-center justify-start">
+                      <Icon className="w-6 h-6 text-[#C9A86A] transition-transform duration-300 group-hover:scale-110" />
+                    </div>
+                    <h3 className="font-editorial text-xl sm:text-2xl font-normal text-[#F7F5F2] group-hover:text-[#C9A86A] transition-colors duration-300 leading-tight mb-2.5">
+                      {feat.title}
+                    </h3>
+                    <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light leading-relaxed mb-6">
+                      {feat.description}
+                    </p>
                   </div>
-
-                  <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#C8A45D] font-medium block mb-1">
-                    {feat.subtitle}
-                  </span>
-
-                  <h3 className="font-editorial text-xl font-normal text-[#F8F6F3] group-hover:text-[#C8A45D] transition-colors mb-2">
-                    {feat.title}
-                  </h3>
-
-                  <p className="font-sans text-xs text-[#8E8A85] font-light leading-relaxed">
-                    {feat.description}
-                  </p>
+                  {/* Gold divider — expands on hover */}
+                  <div className="w-8 h-[1.5px] bg-[#C9A86A]/30 group-hover:w-full group-hover:bg-[#C9A86A] transition-all duration-500 ease-out" />
                 </div>
-
-                <div className="mt-6 pt-4 border-t border-[#2A2A2A] w-full flex items-center justify-between">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#315DA8]/60 group-hover:bg-[#C8A45D] transition-colors" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D86A32]/60 group-hover:bg-[#D86A32] transition-colors" />
-                </div>
-              </motion.div>
+              </ScaleStaggerItem>
             );
           })}
-        </div>
+        </Stagger>
+
+        {/* Manifesto Quote */}
+        <BlurReveal delay={0.3} className="mt-20 sm:mt-24 text-center border-t border-[#C9A86A]/15 pt-12 max-w-xl mx-auto">
+          <p className="font-editorial italic text-2xl sm:text-3xl text-[#C9A86A] font-normal tracking-tight">
+            &ldquo;Style that speaks before you do.&rdquo;
+          </p>
+        </BlurReveal>
 
       </div>
     </section>

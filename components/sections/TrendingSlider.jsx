@@ -150,8 +150,8 @@ export default function TrendingSlider() {
   };
 
   return (
-    <section id="trending-now" className="py-24 sm:py-32 bg-[#090909] text-[#F7F4EF] border-t border-white/[0.06] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+    <section id="trending-now" className="py-16 sm:py-24 bg-[#171B21] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ── 1. Premium Section Header ── */}
         <motion.div

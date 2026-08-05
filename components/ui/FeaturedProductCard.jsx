@@ -31,12 +31,12 @@ export default function FeaturedProductCard({ product, className = "" }) {
     <motion.div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group flex flex-col lg:flex-row bg-[#121212] border border-white/[0.08] hover:border-[#C9A96E]/50 rounded-[10px] overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1.5 shadow-xl hover:shadow-2xl hover:shadow-[#C9A96E]/5 col-span-2 ${className}`}
+      className={`group flex flex-col lg:flex-row bg-[#1B1F25] border border-[#C9A86A]/15 hover:border-[#C9A86A]/40 rounded-[14px] overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 shadow-lg hover:shadow-2xl col-span-2 ${className}`}
     >
       {/* 1. Image Container (Balanced Split) */}
       <Link 
         href={`/product/${product.slug || product.id || product._id}`} 
-        className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:w-[54%] lg:max-w-[54%] overflow-hidden bg-[#121212] block shrink-0"
+        className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:w-[54%] lg:max-w-[54%] overflow-hidden bg-[#1B1F25] block shrink-0"
       >
         {/* Primary Image */}
         <img
@@ -46,11 +46,11 @@ export default function FeaturedProductCard({ product, className = "" }) {
         />
 
         {/* Subtle Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#121212]/80 via-transparent to-transparent opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1B1F25]/80 via-transparent to-transparent opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
 
         {/* Badge */}
         {product.badge && (
-          <span className="absolute top-3.5 left-3.5 font-sans text-[9px] uppercase tracking-[0.2em] bg-[#090909]/90 text-[#C9A96E] px-3 py-1.5 border border-white/[0.08] backdrop-blur-md font-medium rounded-sm">
+          <span className="absolute top-3.5 left-3.5 font-sans text-[9px] uppercase tracking-[0.2em] bg-[#0E1013]/90 text-[#C9A86A] px-3 py-1.5 border border-[#C9A86A]/30 backdrop-blur-md font-semibold rounded-[4px]">
             {product.badge}
           </span>
         )}
@@ -75,39 +75,39 @@ export default function FeaturedProductCard({ product, className = "" }) {
       </Link>
 
       {/* 2. Content Area with Adequate Room for Buttons */}
-      <div className="lg:w-[46%] p-5 sm:p-6 lg:p-7 flex flex-col justify-between flex-1 bg-[#121212]">
+      <div className="lg:w-[46%] p-5 sm:p-6 lg:p-7 flex flex-col justify-between flex-1 bg-[#14171C]">
         <div>
           {/* Category */}
-          <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[#C9A96E] font-medium block mb-1.5">
+          <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[#C9A86A] font-semibold block mb-1.5">
             {product.category || "Atelier Collection"}
           </span>
 
           {/* Title: Max 2 lines */}
           <Link href={`/product/${product.id || product._id}`}>
-            <h3 className="font-editorial text-2xl sm:text-3xl font-normal text-[#F4F1EA] group-hover:text-[#C9A96E] transition-colors duration-300 line-clamp-2 leading-[1.25]">
+            <h3 className="font-editorial text-2xl sm:text-3xl font-normal text-[#F7F5F2] group-hover:text-[#C9A86A] transition-colors duration-300 line-clamp-2 leading-[1.25]">
               {product.name}
             </h3>
           </Link>
 
           {/* Price */}
           <div className="mt-3 flex items-baseline gap-3">
-            <span className="font-sans text-xl sm:text-2xl font-bold text-[#C9A96E] price-display">
+            <span className="font-sans text-xl sm:text-2xl font-bold text-[#F7F5F2] price-display tabular-nums">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && (
-              <span className="font-sans text-xs text-[#8E8A85] line-through price-display">
+              <span className="font-sans text-xs text-[#B8B6B0]/60 line-through price-display tabular-nums">
                 {formatPrice(product.originalPrice)}
               </span>
             )}
           </div>
         </div>
 
-        {/* ── 3. Redesigned Action Buttons (No Text Wrap, Perfect Spacing & Height) ── */}
-        <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-row items-center gap-2.5">
+        {/* ── 3. Redesigned Action Buttons ── */}
+        <div className="mt-6 pt-4 border-t border-[#C9A86A]/15 flex flex-row items-center gap-2.5">
           {/* Primary Button: Order Now */}
           <Link
             href={`/product/${product.id || product._id}`}
-            className="flex-1 h-[44px] rounded-[8px] bg-[#C9A96E] hover:bg-[#D4B77D] text-[#090909] font-sans text-[11px] uppercase tracking-wider font-semibold shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap px-2.5 sm:px-3 cursor-pointer shrink-0"
+            className="flex-1 h-[44px] rounded-[12px] bg-[#C9A86A] hover:bg-[#D4B57C] text-[#0E1013] font-sans text-[11px] uppercase tracking-wider font-bold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap px-2.5 sm:px-3 cursor-pointer shrink-0"
           >
             <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
             <span>Order Now</span>
@@ -119,9 +119,9 @@ export default function FeaturedProductCard({ product, className = "" }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 h-[44px] rounded-[8px] bg-transparent border border-[#C9A96E]/50 text-[#F4F1EA] hover:bg-[#25D366]/10 hover:border-[#25D366] hover:text-[#25D366] font-sans text-[11px] uppercase tracking-wider font-medium transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap px-2.5 sm:px-3 cursor-pointer group/wa shrink-0"
+            className="flex-1 h-[44px] rounded-[12px] bg-transparent border border-[#C9A86A]/40 text-[#F7F5F2] hover:bg-[#25D366]/10 hover:border-[#25D366] hover:text-[#25D366] font-sans text-[11px] uppercase tracking-wider font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap px-2.5 sm:px-3 cursor-pointer group/wa shrink-0"
           >
-            <WhatsAppIcon className="w-3.5 h-3.5 text-[#C9A96E] group-hover/wa:text-[#25D366] transition-colors shrink-0" />
+            <WhatsAppIcon className="w-3.5 h-3.5 text-[#C9A86A] group-hover/wa:text-[#25D366] transition-colors shrink-0" />
             <span>WhatsApp</span>
           </a>
         </div>

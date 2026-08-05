@@ -5,51 +5,78 @@ import { createContext, useContext, useState, useEffect } from "react";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: "p1",
-      name: "Savile Double-Breasted Cashmere Blazer",
-      price: 1450,
-      selectedSize: "L",
-      selectedColor: { name: "Deep Navy", hex: "#1c2e4a" },
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop",
-    },
-    {
-      id: "p3",
-      name: "Atelier Raw Silk Grandad Shirt",
-      price: 420,
-      selectedSize: "M",
-      selectedColor: { name: "Ivory", hex: "#f2f1ec" },
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop",
-    },
-  ]);
-
+  const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [wishlist, setWishlist] = useState(["p1", "p4"]);
+  const [wishlist, setWishlist] = useState([]);
   const [promoCode, setPromoCode] = useState("");
   const [promoDiscount, setPromoDiscount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load cart and wishlist from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem("gor_cart_items");
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+      const savedWishlist = localStorage.getItem("gor_wishlist_items");
+      if (savedWishlist) {
+        setWishlist(JSON.parse(savedWishlist));
+      }
+    } catch (e) {
+      console.warn("Failed to load cart from localStorage", e);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  // Save cart to localStorage on changes
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem("gor_cart_items", JSON.stringify(cartItems));
+    } catch (e) {
+      console.warn("Failed to save cart to localStorage", e);
+    }
+  }, [cartItems, isLoaded]);
+
+  // Save wishlist to localStorage on changes
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem("gor_wishlist_items", JSON.stringify(wishlist));
+    } catch (e) {
+      console.warn("Failed to save wishlist to localStorage", e);
+    }
+  }, [wishlist, isLoaded]);
 
   // Totals calculation
-  const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalItemsCount = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 1), 0);
   const discountAmount = promoDiscount > 0 ? Math.round(subtotal * promoDiscount) : 0;
   const shipping = subtotal >= 1000 || subtotal === 0 ? 0 : 45;
   const tax = Math.round((subtotal - discountAmount) * 0.08);
   const grandTotal = Math.max(0, subtotal - discountAmount + shipping + tax);
 
   const addToCart = (product, size = null, color = null, quantity = 1) => {
-    const chosenSize = size || (product.sizes ? product.sizes[0] : "M");
-    const chosenColor = color || (product.colors ? product.colors[0] : { name: "Navy", hex: "#1c2e4a" });
-    const image = product.images ? product.images[0] : product.img1;
+    if (!product) return;
+
+    const chosenSize = size || (Array.isArray(product.sizes) ? product.sizes[0] : "M");
+    const chosenColor = color || (Array.isArray(product.colors) ? product.colors[0] : { name: "Onyx Black", hex: "#111111" });
+    const image =
+      product.image ||
+      (Array.isArray(product.images) && product.images[0]) ||
+      product.imageUrl ||
+      "/images/products/gor-codset-burgundy-alo.webp";
+
+    const prodId = product.id || product._id;
 
     setCartItems((prev) => {
       const existingIdx = prev.findIndex(
         (item) =>
-          item.id === product.id &&
+          (item.id || item._id) === prodId &&
           item.selectedSize === chosenSize &&
-          item.selectedColor.name === chosenColor.name
+          item.selectedColor?.name === chosenColor?.name
       );
 
       if (existingIdx > -1) {
@@ -61,9 +88,10 @@ export function CartProvider({ children }) {
       return [
         ...prev,
         {
-          id: product.id,
+          id: prodId,
+          _id: prodId,
           name: product.name,
-          price: product.price,
+          price: Number(product.price) || 0,
           selectedSize: chosenSize,
           selectedColor: chosenColor,
           quantity,
@@ -80,9 +108,9 @@ export function CartProvider({ children }) {
       prev
         .map((item) => {
           if (
-            item.id === id &&
+            (item.id === id || item._id === id) &&
             item.selectedSize === size &&
-            item.selectedColor.name === colorName
+            (item.selectedColor?.name === colorName || !colorName)
           ) {
             const newQty = item.quantity + delta;
             return newQty > 0 ? { ...item, quantity: newQty } : null;
@@ -98,16 +126,16 @@ export function CartProvider({ children }) {
       prev.filter(
         (item) =>
           !(
-            item.id === id &&
+            (item.id === id || item._id === id) &&
             item.selectedSize === size &&
-            item.selectedColor.name === colorName
+            (item.selectedColor?.name === colorName || !colorName)
           )
       )
     );
   };
 
   const applyPromoCode = (code) => {
-    if (code.toUpperCase() === "GORVIP" || code.toUpperCase() === "ATELIER15") {
+    if (code && (code.toUpperCase() === "GORVIP" || code.toUpperCase() === "ATELIER15")) {
       setPromoCode(code.toUpperCase());
       setPromoDiscount(0.15);
       return { success: true, message: "VIP 15% Atelier Discount Applied!" };
@@ -120,6 +148,7 @@ export function CartProvider({ children }) {
   };
 
   const toggleWishlist = (productId) => {
+    if (!productId) return;
     setWishlist((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)

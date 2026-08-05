@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Flame } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import FeaturedProductCard from "@/components/ui/FeaturedProductCard";
+import { BlurReveal, Stagger, ScaleStaggerItem } from "@/components/ui/Motion";
 
 const CURATED_BEST_SELLERS = [
   {
@@ -15,10 +16,7 @@ const CURATED_BEST_SELLERS = [
     price: 420,
     badge: "MOST WANTED #1",
     description: "High-density mulberry raw silk cut with a relaxed drape and mother-of-pearl buttons.",
-    images: [
-      "/images/products/gor-codset-beige-prada.webp",
-      "/images/lookbook/gor-lookbook-4.webp",
-    ],
+    images: ["/images/products/gor-codset-beige-prada.webp", "/images/lookbook/gor-lookbook-4.webp"],
     colors: "Raw Ivory · Ebony Black",
     isFeatured: true,
   },
@@ -29,10 +27,7 @@ const CURATED_BEST_SELLERS = [
     price: 580,
     badge: "BESTSELLER",
     description: "Single-pleated trousers with side adjusters and a gentle taper.",
-    images: [
-      "/images/products/gor-codset-burgundy-alo.webp",
-      "/images/lookbook/gor-lookbook-3.webp",
-    ],
+    images: ["/images/products/gor-codset-burgundy-alo.webp", "/images/lookbook/gor-lookbook-3.webp"],
     colors: "Dark Olive · Charcoal Slate",
   },
   {
@@ -43,10 +38,7 @@ const CURATED_BEST_SELLERS = [
     originalPrice: 2450,
     badge: "ICONIC",
     description: "Supple lambskin suede lined with plush shearling wool.",
-    images: [
-      "/images/lookbook/gor-lookbook-6.webp",
-      "/images/lookbook/gor-lookbook-5.webp",
-    ],
+    images: ["/images/lookbook/gor-lookbook-6.webp", "/images/lookbook/gor-lookbook-5.webp"],
     colors: "Espresso Brown · Truffle",
   },
   {
@@ -56,10 +48,7 @@ const CURATED_BEST_SELLERS = [
     price: 390,
     badge: "BESTSELLER",
     description: "Lightweight habotai silk shirt with subtle geometric weave.",
-    images: [
-      "/images/products/gor-codset-black-burberry.webp",
-      "/images/lookbook/gor-lookbook-2.webp",
-    ],
+    images: ["/images/products/gor-codset-black-burberry.webp", "/images/lookbook/gor-lookbook-2.webp"],
     colors: "Champagne Gold · Obsidian",
   },
   {
@@ -69,16 +58,14 @@ const CURATED_BEST_SELLERS = [
     price: 280,
     badge: "ESSENTIAL",
     description: "Hand-burnished Italian calfskin belt with brass buckle.",
-    images: [
-      "/images/lookbook/gor-lookbook-1.webp",
-      "/images/lookbook/gor-lookbook-7.webp",
-    ],
+    images: ["/images/lookbook/gor-lookbook-1.webp", "/images/lookbook/gor-lookbook-7.webp"],
     colors: "Cognac · Obsidian",
   },
 ];
 
 export default function BestSellers() {
   const [bestsellers, setBestsellers] = useState(CURATED_BEST_SELLERS);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     async function fetchBestSellers() {
@@ -106,25 +93,19 @@ export default function BestSellers() {
   return (
     <section id="best-sellers" className="py-24 sm:py-32 bg-[#090909] text-[#F7F4EF] border-t border-white/[0.06] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        
-        {/* ── 1. Subtle Editorial Divider Above Section ── */}
-        <div className="flex items-center gap-4 mb-10">
+
+        {/* Editorial Divider */}
+        <BlurReveal delay={0} className="flex items-center gap-4 mb-10">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#C9A96E]/40 to-[#C9A96E]/10" />
           <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#C9A96E] font-medium flex items-center gap-2">
             <Flame className="w-3.5 h-3.5 text-[#C9A96E]" />
             TRENDING NOW · BEST SELLERS
           </span>
           <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-[#C9A96E]/40 to-[#C9A96E]/10" />
-        </div>
+        </BlurReveal>
 
-        {/* ── 2. Section Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6"
-        >
+        {/* Section Header */}
+        <BlurReveal delay={0.05} className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6">
           <div>
             <h2 className="font-editorial text-4xl sm:text-6xl font-normal text-[#F4F1EA] tracking-tight leading-[1.05]">
               Best Sellers
@@ -141,26 +122,21 @@ export default function BestSellers() {
             <span>Explore All Best Sellers</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform duration-300" />
           </Link>
-        </motion.div>
+        </BlurReveal>
 
-        {/* ── 3. Premium Product Grid with 2x Featured Card First ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-stretch">
-          
-          {/* First Item: 2x Width Featured Card on Desktop, Full Width on Mobile */}
+        {/* Product Grid — staggered reveal */}
+        <Stagger staggerDelay={0.07} className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-stretch">
           {featuredBestseller && (
-            <div className="col-span-2">
+            <ScaleStaggerItem className="col-span-2">
               <FeaturedProductCard product={featuredBestseller} />
-            </div>
+            </ScaleStaggerItem>
           )}
-
-          {/* Remaining Items: Compact Product Cards (2-column on mobile) */}
           {regularBestsellers.map((product) => (
-            <div key={product.id || product._id} className="col-span-1">
+            <ScaleStaggerItem key={product.id || product._id} className="col-span-1">
               <ProductCard product={product} />
-            </div>
+            </ScaleStaggerItem>
           ))}
-
-        </div>
+        </Stagger>
 
       </div>
     </section>

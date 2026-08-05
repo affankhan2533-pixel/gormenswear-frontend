@@ -67,6 +67,19 @@ export default function StructuredData({ type = "Organization", data = {} }) {
         item: item.url.startsWith("http") ? item.url : `${baseUrl}${item.url}`,
       })),
     };
+  } else if (type === "FAQPage" && data.faqs) {
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: data.faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    };
   }
 
   if (!schema) return null;

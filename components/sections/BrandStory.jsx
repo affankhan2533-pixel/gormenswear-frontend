@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
@@ -19,8 +20,13 @@ export default function BrandStory() {
   return (
     <section
       ref={containerRef}
-      className="py-20 sm:py-32 lg:py-36 bg-[#0F1115] text-[#F5F3EF] overflow-hidden border-t border-b border-[rgba(200,167,106,0.15)] relative bg-section-primary"
+      className="py-16 sm:py-24 bg-[#1B1F25] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]"
     >
+      {/* Background Depth Accents */}
+      <div 
+        className="absolute top-0 right-0 w-[550px] h-[550px] rounded-full pointer-events-none z-0 opacity-20 blur-[150px]"
+        style={{ background: "radial-gradient(circle, rgba(201, 168, 106, 0.04) 0%, transparent 70%)" }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-14 items-center flex-col-reverse md:flex-row">
           
@@ -80,7 +86,7 @@ export default function BrandStory() {
 
           </div>
 
-          {/* RIGHT COLUMN (55% width on Desktop: Image First on Mobile) */}
+          {/* RIGHT COLUMN (55% width on Desktop: Next.js Image Optimization) */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -89,13 +95,13 @@ export default function BrandStory() {
             className="md:col-span-7 lg:col-span-7 relative rounded-[14px] overflow-hidden bg-[#1B1F25] border border-[rgba(200,167,106,0.15)] shadow-2xl group order-1 md:order-2"
           >
             <div className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[4/5] lg:aspect-[16/10] overflow-hidden">
-              <motion.img
-                style={{ y: imageY, scale: imageScale }}
+              <Image
                 src="/images/categories/image.png"
                 alt="GOR Menswear Editorial Campaign"
+                fill
+                sizes="(max-width: 768px) 100vw, 55vw"
                 loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover object-top filter brightness-[0.94] contrast-[1.05] group-hover:scale-105 transition-transform duration-700 ease-out"
+                className="object-cover object-top filter brightness-[0.94] contrast-[1.05] group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0F1115]/80 via-transparent to-transparent opacity-70" />
             </div>
