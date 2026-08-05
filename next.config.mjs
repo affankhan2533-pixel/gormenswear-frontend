@@ -97,11 +97,9 @@ const nextConfig = {
                 : "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://images.unsplash.com http://localhost:5000",
-              isDev
-                ? "connect-src 'self' http://localhost:5000 ws://localhost:3000 ws://localhost:3001"
-                : "connect-src 'self'",
-              "media-src 'self' blob:",
+              "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com http://localhost:5000 https://*.onrender.com",
+              "connect-src 'self' http://localhost:5000 https://*.onrender.com https://res.cloudinary.com ws://localhost:3000 ws://localhost:3001",
+              "media-src 'self' blob: https://res.cloudinary.com",
               "frame-ancestors 'none'",
             ].join("; "),
           },
