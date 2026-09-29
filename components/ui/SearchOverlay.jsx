@@ -1,141 +1,47 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  X,
-  Sparkles,
-  Clock,
-  TrendingUp,
-  RotateCcw,
-  Eye,
-  Tag,
-  Grid,
-  Command,
-  Loader2,
-  ChevronRight,
-  Mic,
-  MicOff,
-  ShoppingBag,
-  ArrowUpRight,
-} from "lucide-react";
+import { X, Search } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { productService } from "@/lib/productService";
-import QuickViewDrawer from "@/components/plp/QuickViewDrawer";
-
-const POPULAR_SEARCHES = [
-  "Shirts",
-  "Polos",
-  "New Arrivals",
-  "Best Sellers",
-  "Cotton Shirts",
-  "Oversized Tees",
-];
-
-const STORE_COLLECTIONS = [
-  { name: "Co-Ord Sets & Streetwear", category: "codset", href: "/shop/codset" },
-  { name: "Outerwear & Layers", category: "outerwear", href: "/shop/outerwear" },
-  { name: "Designer Shirts", category: "shirts", href: "/shop/shirts" },
-  { name: "Signature Trousers", category: "trousers", href: "/shop/trousers" },
-  { name: "Bespoke Accessories", category: "accessories", href: "/shop/accessories" },
-];
 
 export default function SearchOverlay({ isOpen, onClose }) {
   const router = useRouter();
-
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
   const [products, setProducts] = useState([]);
-  const [recentSearches, setRecentSearches] = useState([]);
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-
-  // Keyboard Arrow Selection Index (-1 means input field)
-  const [focusedIndex, setFocusedIndex] = useState(-1);
-
-  // Voice Search State
-  const [isListening, setIsListening] = useState(false);
-  const [voiceSupported, setVoiceSupported] = useState(false);
-  const recognitionRef = useRef(null);
-
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
 
-  // Check Web Speech API support
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        setVoiceSupported(true);
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = "en-US";
-
-        recognition.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          setQuery(transcript);
-          setIsListening(false);
-        };
-
-        recognition.onerror = () => {
-          setIsListening(false);
-        };
-
-        recognition.onend = () => {
-          setIsListening(false);
-        };
-
-        recognitionRef.current = recognition;
-      }
-    }
-  }, []);
-
-  // Fetch catalog for search index
+  // Fetch catalog when overlay opens
   useEffect(() => {
     async function loadCatalog() {
+      setLoading(true);
       try {
         const items = await productService.getStorefrontProducts();
         setProducts(items || []);
       } catch (err) {
         console.error("Failed to load search catalog", err);
+      } finally {
+        setLoading(false);
       }
     }
-    if (isOpen) loadCatalog();
-  }, [isOpen]);
-
-  // Debounce input changes (200ms)
-  useEffect(() => {
-    if (!query) {
-      setDebouncedQuery("");
-      setIsSearching(false);
-      return;
+    if (isOpen) {
+      loadCatalog();
     }
-    setIsSearching(true);
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query.trim());
-      setIsSearching(false);
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [query]);
+  }, [isOpen]);
 
   // Handle open, focus & ESC listener
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 80);
       document.body.style.overflow = "hidden";
-
-      try {
-        const stored = JSON.parse(localStorage.getItem("gor_recent_searches") || "[]");
-        setRecentSearches(Array.isArray(stored) ? stored.slice(0, 8) : []);
-      } catch (e) {}
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
       setQuery("");
-      setFocusedIndex(-1);
     }
 
     const handleKeyDown = (e) => {
@@ -147,518 +53,197 @@ export default function SearchOverlay({ isOpen, onClose }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
 
-  // Save Recent Search
-  const saveRecentSearch = useCallback((term) => {
-    if (!term || !term.trim()) return;
-    const cleanTerm = term.trim();
-    setRecentSearches((prev) => {
-      const filtered = prev.filter((s) => s.toLowerCase() !== cleanTerm.toLowerCase());
-      const updated = [cleanTerm, ...filtered].slice(0, 8);
-      try {
-        localStorage.setItem("gor_recent_searches", JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
-  }, []);
+  // Filter products based on query
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return products
+      .filter((p) => {
+        const name = (p.name || "").toLowerCase();
+        const category = (p.category || "").toLowerCase();
+        const subcategory = (p.subcategory || "").toLowerCase();
+        const desc = (p.description || "").toLowerCase();
+        return (
+          name.includes(q) ||
+          category.includes(q) ||
+          subcategory.includes(q) ||
+          desc.includes(q)
+        );
+      })
+      .slice(0, 12);
+  }, [query, products]);
 
-  // Remove single recent search
-  const removeRecentSearch = (term) => {
-    setRecentSearches((prev) => {
-      const updated = prev.filter((s) => s !== term);
-      try {
-        localStorage.setItem("gor_recent_searches", JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
+  const handleSelect = (productId) => {
+    onClose();
+    router.push(`/product/${productId}`);
   };
-
-  // Clear all recent searches
-  const clearAllRecentSearches = () => {
-    setRecentSearches([]);
-    try {
-      localStorage.removeItem("gor_recent_searches");
-    } catch (e) {}
-  };
-
-  const handleSelectKeyword = (kw) => {
-    setQuery(kw);
-    saveRecentSearch(kw);
-  };
-
-  // Voice Search Toggle
-  const toggleVoiceSearch = () => {
-    if (!recognitionRef.current) return;
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (e) {
-        setIsListening(false);
-      }
-    }
-  };
-
-  // Grouped Search Filtering
-  const { matchingProducts, matchingCollections, matchingCategories, suggestions } = useMemo(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2) {
-      return { matchingProducts: [], matchingCollections: [], matchingCategories: [], suggestions: [] };
-    }
-
-    const q = debouncedQuery.toLowerCase();
-
-    // 1. Matching Products
-    const prods = products.filter(
-      (p) =>
-        (p.name || "").toLowerCase().includes(q) ||
-        (p.category || "").toLowerCase().includes(q) ||
-        (p.description || "").toLowerCase().includes(q)
-    );
-
-    // 2. Matching Collections
-    const colles = STORE_COLLECTIONS.filter((c) =>
-      c.name.toLowerCase().includes(q)
-    );
-
-    // 3. Matching Categories
-    const cats = Array.from(
-      new Set(products.map((p) => p.category).filter(Boolean))
-    ).filter((cat) => cat.toLowerCase().includes(q));
-
-    // 4. AI Search Suggestions
-    const suggs = POPULAR_SEARCHES.filter((kw) => kw.toLowerCase().includes(q));
-
-    return {
-      matchingProducts: prods.slice(0, 6),
-      matchingCollections: colles,
-      matchingCategories: cats,
-      suggestions: suggs,
-    };
-  }, [debouncedQuery, products]);
-
-  // Combined Results List for Keyboard Navigation
-  const flatResults = useMemo(() => {
-    return [
-      ...matchingProducts.map((p) => ({ type: "product", item: p, url: `/product/${p.id || p._id}` })),
-      ...matchingCollections.map((c) => ({ type: "collection", item: c, url: c.href })),
-    ];
-  }, [matchingProducts, matchingCollections]);
-
-  // Keyboard navigation handler (ArrowUp, ArrowDown, Enter)
-  const handleInputKeyDown = (e) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setFocusedIndex((prev) => (prev < flatResults.length - 1 ? prev + 1 : 0));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setFocusedIndex((prev) => (prev > 0 ? prev - 1 : flatResults.length - 1));
-    } else if (e.key === "Enter") {
-      if (focusedIndex >= 0 && flatResults[focusedIndex]) {
-        e.preventDefault();
-        saveRecentSearch(debouncedQuery);
-        router.push(flatResults[focusedIndex].url);
-        onClose();
-      } else if (query.trim()) {
-        e.preventDefault();
-        saveRecentSearch(query.trim());
-        router.push(`/shop?search=${encodeURIComponent(query.trim())}`);
-        onClose();
-      }
-    }
-  };
-
-  if (!isOpen) return null;
 
   return (
-    <>
-      <AnimatePresence>
+    <AnimatePresence>
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[200] bg-[#0B0B0B]/95 backdrop-blur-2xl flex flex-col p-4 sm:p-8 overflow-y-auto select-none text-[#F7F5F2]"
-          role="search"
-          aria-label="Global Store Search"
+          className="fixed inset-0 z-[99999] bg-[#F5F2EC]/98 backdrop-blur-xl flex flex-col select-none text-[#111111]"
         >
-          {/* Top Bar Header */}
-          <div className="max-w-[1200px] w-full mx-auto flex items-center justify-between pb-4 border-b border-[#2A2A2A]">
-            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#C9A86A] font-bold flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5" /> GOR ATELIER INTELLIGENT SEARCH
+          {/* Top Bar with Close */}
+          <div className="max-w-6xl w-full mx-auto px-6 sm:px-10 pt-6 sm:pt-8 flex items-center justify-between">
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#716D66] font-semibold">
+              GOR ARCHIVE SEARCH
             </span>
-
             <button
               type="button"
               onClick={onClose}
-              className="flex items-center gap-2 font-sans text-xs uppercase tracking-[0.2em] text-[#B8B6B0] hover:text-[#C9A86A] transition-colors cursor-pointer group"
+              aria-label="Close search overlay"
+              className="p-2 text-[#111111] hover:text-[#716D66] transition-colors cursor-pointer"
             >
-              <span>Close</span>
-              <div className="w-8 h-8 rounded-full border border-[#2A2A2A] group-hover:border-[#C9A86A] flex items-center justify-center bg-[#111111] transition-colors shadow-md">
-                <X className="w-4 h-4 text-[#F7F5F2]" />
-              </div>
+              <X className="w-6 h-6 stroke-[1.5]" />
             </button>
           </div>
 
-          {/* Main Search Input Container */}
-          <div className="max-w-[1200px] w-full mx-auto my-6 sm:my-8">
-            <div className="relative flex items-center border-b border-[#2A2A2A] focus-within:border-[#C9A86A] transition-colors pb-3">
-              <Search className="w-6 h-6 sm:w-8 sm:h-8 text-[#C9A86A] shrink-0 mr-3" />
-
+          {/* Search Input Section */}
+          <div className="max-w-4xl w-full mx-auto px-6 sm:px-10 pt-10 sm:pt-16 pb-8">
+            <div className="relative border-b border-[#D8D2C8] pb-3 focus-within:border-[#111111] transition-colors">
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setFocusedIndex(-1);
-                }}
-                onKeyDown={handleInputKeyDown}
-                placeholder="Search shirts, polos, trousers..."
-                className="w-full bg-transparent font-serif text-2xl sm:text-4xl text-[#F7F5F2] placeholder-[#B8B6B0]/40 focus:outline-none"
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="SEARCH GOR"
+                aria-label="Search GOR collection"
+                className="w-full bg-transparent font-editorial text-3xl sm:text-5xl text-[#111111] placeholder:text-[#D8D2C8] focus:outline-none tracking-tight pr-10"
               />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#716D66] hover:text-[#111111] text-xs font-mono uppercase"
+                >
+                  CLEAR
+                </button>
+              ) : (
+                <Search className="w-6 h-6 stroke-[1.5] text-[#716D66] absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
+              )}
+            </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {/* Voice Search Button */}
-                {voiceSupported && (
-                  <button
-                    type="button"
-                    onClick={toggleVoiceSearch}
-                    title={isListening ? "Listening... Click to stop" : "Voice Search"}
-                    className={`p-2 rounded-full border transition-all cursor-pointer ${
-                      isListening
-                        ? "bg-[#D86A32]/20 border-[#D86A32] text-[#D86A32] animate-pulse"
-                        : "bg-[#111111] border-[#2A2A2A] text-[#B8B6B0] hover:text-[#C9A86A] hover:border-[#C9A86A]"
-                    }`}
-                  >
-                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                  </button>
+            {/* Suggested Shortcuts when empty */}
+            {!query && (
+              <div className="pt-6 flex flex-wrap items-center gap-3">
+                <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#716D66]">
+                  SUGGESTED:
+                </span>
+                {["T-Shirts", "Shirts", "Polos", "Pants", "Trousers", "Jackets", "Jerseys"].map(
+                  (term) => (
+                    <button
+                      key={term}
+                      type="button"
+                      onClick={() => setQuery(term)}
+                      className="px-3 py-1 border border-[#D8D2C8] text-[#111111] hover:border-[#111111] text-xs font-sans transition-colors cursor-pointer"
+                    >
+                      {term}
+                    </button>
+                  )
                 )}
+              </div>
+            )}
+          </div>
 
-                {isSearching && <Loader2 className="w-4 h-4 text-[#C9A86A] animate-spin" />}
+          {/* Results Area */}
+          <div className="flex-1 overflow-y-auto px-6 sm:px-10 pb-16">
+            <div className="max-w-4xl w-full mx-auto">
+              {query && searchResults.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between pb-4 border-b border-[#D8D2C8] mb-6">
+                    <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[#716D66]">
+                      {searchResults.length} {searchResults.length === 1 ? "RESULT" : "RESULTS"} FOR "{query}"
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        router.push(`/shop?search=${encodeURIComponent(query)}`);
+                      }}
+                      className="font-sans text-[11px] uppercase tracking-[0.2em] text-[#111111] hover:text-[#716D66] font-medium"
+                    >
+                      VIEW IN CATALOGUE →
+                    </button>
+                  </div>
 
-                {query && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    {searchResults.map((product) => {
+                      const img =
+                        product.images?.[0] ||
+                        product.imageUrl ||
+                        product.image ||
+                        "/images/lookbook/gor-lookbook-1.webp";
+
+                      return (
+                        <div
+                          key={product.id || product._id}
+                          onClick={() => handleSelect(product.id || product._id)}
+                          className="group cursor-pointer flex flex-col"
+                        >
+                          <div className="relative aspect-[3/4] w-full bg-[#E9E5DD] overflow-hidden mb-3">
+                            <Image
+                              src={img}
+                              alt={product.name}
+                              fill
+                              unoptimized
+                              className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </div>
+
+                          <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#716D66] mb-1">
+                            {product.category || "COLLECTION"}
+                          </span>
+
+                          <h4 className="font-editorial text-lg text-[#111111] group-hover:text-[#8C7A6B] transition-colors leading-tight mb-1">
+                            {product.name}
+                          </h4>
+
+                          <span className="font-sans text-xs text-[#111111] font-medium">
+                            {formatPrice(product.price)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {query && searchResults.length === 0 && !loading && (
+                <div className="py-16 text-center space-y-3">
+                  <span className="font-mono text-xs uppercase tracking-[0.3em] text-[#716D66]">
+                    00 / NO MATCHES
+                  </span>
+                  <h3 className="font-editorial text-3xl text-[#111111] font-normal">
+                    NO PIECES FOUND
+                  </h3>
+                  <p className="font-sans text-xs text-[#716D66] max-w-sm mx-auto">
+                    No garments match "{query}". Try checking category names or browse the full collection.
+                  </p>
                   <button
                     type="button"
                     onClick={() => {
-                      setQuery("");
-                      setFocusedIndex(-1);
+                      onClose();
+                      router.push("/shop");
                     }}
-                    className="font-sans text-[10px] uppercase tracking-widest text-[#B8B6B0] hover:text-[#C9A86A] px-2.5 py-1 bg-[#111111] rounded border border-[#2A2A2A]"
+                    className="mt-4 px-6 py-2.5 bg-[#151515] text-[#F5F2EC] font-sans text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#252525] transition-colors cursor-pointer"
                   >
-                    Clear
+                    EXPLORE ALL PIECES
                   </button>
-                )}
-
-                <div className="hidden sm:flex items-center gap-1 font-sans text-[10px] text-[#B8B6B0] bg-[#111111] px-2.5 py-1 rounded border border-[#2A2A2A]">
-                  <Command className="w-3 h-3 text-[#C9A86A]" /> K
                 </div>
-              </div>
+              )}
             </div>
-
-            {/* Default State: Recent & Popular Searches when query empty */}
-            {!query && (
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Recent Searches */}
-                {recentSearches.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#B8B6B0] font-bold flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-[#C9A86A]" /> Recent Searches
-                      </span>
-                      <button
-                        type="button"
-                        onClick={clearAllRecentSearches}
-                        className="font-sans text-[10px] text-[#B8B6B0] hover:text-[#C9A86A] underline cursor-pointer"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {recentSearches.map((term) => (
-                        <div
-                          key={term}
-                          className="flex items-center gap-1.5 bg-[#111111] border border-[#2A2A2A] px-3.5 py-1.5 rounded-full text-xs font-sans text-[#F7F5F2] hover:border-[#C9A86A]/50 transition-colors"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleSelectKeyword(term)}
-                            className="hover:text-[#C9A86A] transition-colors cursor-pointer"
-                          >
-                            {term}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => removeRecentSearch(term)}
-                            className="text-[#B8B6B0] hover:text-rose-400 cursor-pointer"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Popular Searches */}
-                <div className="space-y-3">
-                  <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-bold flex items-center gap-1.5">
-                    <TrendingUp className="w-3.5 h-3.5 text-[#C9A86A]" /> Popular Searches
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {POPULAR_SEARCHES.map((kw) => (
-                      <button
-                        key={kw}
-                        type="button"
-                        onClick={() => handleSelectKeyword(kw)}
-                        className="px-3.5 py-1.5 rounded-full bg-[#111111] border border-[#2A2A2A] hover:border-[#C9A86A] font-sans text-xs uppercase tracking-wider text-[#B8B6B0] hover:text-[#F7F5F2] transition-all cursor-pointer shadow-sm"
-                      >
-                        {kw}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Live Search Results (Split Layout: Left 60% Products, Right 40% Collections & Categories) */}
-          <div className="max-w-[1200px] w-full mx-auto flex-1">
-            {debouncedQuery && (
-              <div>
-                {matchingProducts.length === 0 && matchingCollections.length === 0 && matchingCategories.length === 0 ? (
-                  /* LUXURY NO RESULTS EMPTY STATE */
-                  <div className="py-16 px-6 bg-[#111111] border border-[#2A2A2A] rounded-2xl text-center space-y-4 shadow-xl">
-                    <div className="w-12 h-12 rounded-full border border-[#2A2A2A] bg-[#0B0B0B] text-[#C9A86A] flex items-center justify-center mx-auto shadow-inner">
-                      <RotateCcw className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-serif text-3xl font-normal text-[#F7F5F2]">No matching products.</h3>
-                      <p className="font-sans text-xs text-[#B8B6B0] font-light mt-1">
-                        No garments found matching &quot;{debouncedQuery}&quot;. Explore our signature collections below.
-                      </p>
-                    </div>
-
-                    <div className="pt-6 border-t border-[#2A2A2A]">
-                      <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-bold block mb-4">
-                        SUGGESTED COLLECTIONS
-                      </span>
-                      <div className="flex flex-wrap items-center justify-center gap-2.5">
-                        {STORE_COLLECTIONS.map((c) => (
-                          <Link
-                            key={c.category}
-                            href={c.href}
-                            onClick={onClose}
-                            className="px-4 py-2 bg-[#0B0B0B] border border-[#2A2A2A] hover:border-[#C9A86A] rounded-full text-xs font-sans text-[#F7F5F2] transition-colors"
-                          >
-                            {c.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
-                    {/* LEFT COLUMN (7/12 = 60%): PRODUCTS */}
-                    <div className="lg:col-span-7 space-y-4">
-                      <div className="flex justify-between items-center pb-2 border-b border-[#2A2A2A]">
-                        <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-bold">
-                          GARMENTS ({matchingProducts.length})
-                        </span>
-                        {matchingProducts.length > 0 && (
-                          <Link
-                            href={`/shop?search=${encodeURIComponent(debouncedQuery)}`}
-                            onClick={() => {
-                              saveRecentSearch(debouncedQuery);
-                              onClose();
-                            }}
-                            className="font-sans text-xs text-[#C9A86A] hover:underline font-semibold uppercase tracking-wider flex items-center gap-1"
-                          >
-                            View All Results <ArrowUpRight className="w-3.5 h-3.5" />
-                          </Link>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {matchingProducts.map((prod, idx) => {
-                          const isFocused = focusedIndex === idx;
-                          const displayBadge = prod.badge || (prod.isNew ? "NEW" : null);
-
-                          return (
-                            <motion.div
-                              key={prod.id || prod._id || idx}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.2, delay: idx * 0.03 }}
-                              className={`group bg-[#111111] border rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-200 relative ${
-                                isFocused
-                                  ? "border-[#C9A86A] ring-2 ring-[#C9A86A]/40 scale-[1.02]"
-                                  : "border-[#2A2A2A] hover:border-[#C9A86A]/50"
-                              }`}
-                            >
-                              <Link
-                                href={`/product/${prod.id || prod.slug || prod._id}`}
-                                onClick={() => {
-                                  saveRecentSearch(debouncedQuery);
-                                  onClose();
-                                }}
-                                className="block relative aspect-[3/4] w-full overflow-hidden bg-[#0B0B0B]"
-                              >
-                                <Image
-                                  src={prod.image || prod.images?.[0] || "/images/products/gor-codset-burgundy-alo.webp"}
-                                  alt={prod.name}
-                                  fill
-                                  unoptimized
-                                  className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                                />
-
-                                {displayBadge && (
-                                  <span className="absolute top-2.5 left-2.5 z-10 font-sans text-[8.5px] uppercase tracking-[0.18em] bg-[#0B0B0B]/95 text-[#D86A32] px-2 py-0.5 border border-[#D86A32]/40 backdrop-blur-md font-semibold rounded-md">
-                                    {displayBadge}
-                                  </span>
-                                )}
-
-                                {/* Hover Preview / Quick View Trigger */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setQuickViewProduct(prod);
-                                  }}
-                                  className="absolute bottom-2.5 right-2.5 z-10 w-9 h-9 rounded-full bg-[#0B0B0B]/90 border border-[#2A2A2A] text-[#F7F5F2] hover:text-[#C9A86A] flex items-center justify-center transition-colors cursor-pointer shadow-lg backdrop-blur-md"
-                                  aria-label="Quick View"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                              </Link>
-
-                              <div className="p-3.5 space-y-1 bg-[#111111]">
-                                <span className="font-sans text-[9px] uppercase tracking-wider text-[#C9A86A] font-bold block">
-                                  {prod.category || "Atelier Selection"}
-                                </span>
-                                <h4 className="font-serif text-sm text-[#F7F5F2] truncate group-hover:text-[#C9A86A] transition-colors">
-                                  {prod.name}
-                                </h4>
-                                <span className="font-sans text-xs font-bold text-[#F7F5F2] block price-display">
-                                  {formatPrice(prod.price)}
-                                </span>
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* RIGHT COLUMN (5/12 = 40%): COLLECTIONS & CATEGORIES */}
-                    <div className="lg:col-span-5 space-y-6">
-                      
-                      {/* Collections */}
-                      {matchingCollections.length > 0 && (
-                        <div>
-                          <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-bold block mb-3 pb-1 border-b border-[#2A2A2A]">
-                            COLLECTIONS ({matchingCollections.length})
-                          </span>
-                          <div className="space-y-2">
-                            {matchingCollections.map((col, idx) => {
-                              const itemIndex = matchingProducts.length + idx;
-                              const isFocused = focusedIndex === itemIndex;
-
-                              return (
-                                <Link
-                                  key={col.category}
-                                  href={col.href}
-                                  onClick={() => {
-                                    saveRecentSearch(debouncedQuery);
-                                    onClose();
-                                  }}
-                                  className={`p-3.5 bg-[#111111] border rounded-xl flex items-center justify-between transition-all group ${
-                                    isFocused
-                                      ? "border-[#C9A86A] ring-2 ring-[#C9A86A]/40"
-                                      : "border-[#2A2A2A] hover:border-[#C9A86A]"
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <Grid className="w-4 h-4 text-[#C9A86A]" />
-                                    <span className="font-sans text-xs font-bold text-[#F7F5F2]">{col.name}</span>
-                                  </div>
-                                  <ChevronRight className="w-4 h-4 text-[#B8B6B0] group-hover:text-[#C9A86A] group-hover:translate-x-1 transition-all" />
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Categories */}
-                      {matchingCategories.length > 0 && (
-                        <div>
-                          <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-bold block mb-3 pb-1 border-b border-[#2A2A2A]">
-                            CATEGORIES ({matchingCategories.length})
-                          </span>
-                          <div className="flex flex-wrap gap-2">
-                            {matchingCategories.map((cat) => (
-                              <Link
-                                key={cat}
-                                href={`/shop?category=${encodeURIComponent(cat)}`}
-                                onClick={() => {
-                                  saveRecentSearch(debouncedQuery);
-                                  onClose();
-                                }}
-                                className="px-3.5 py-2 bg-[#111111] border border-[#2A2A2A] hover:border-[#C9A86A] rounded-full text-xs font-sans text-[#F7F5F2] flex items-center gap-1.5 transition-colors"
-                              >
-                                <Tag className="w-3.5 h-3.5 text-[#C9A86A]" />
-                                <span>{cat}</span>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Suggestions */}
-                      {suggestions.length > 0 && (
-                        <div>
-                          <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-bold block mb-3 pb-1 border-b border-[#2A2A2A]">
-                            SUGGESTED TERMS
-                          </span>
-                          <div className="flex flex-wrap gap-2">
-                            {suggestions.map((sug) => (
-                              <button
-                                key={sug}
-                                type="button"
-                                onClick={() => handleSelectKeyword(sug)}
-                                className="px-3 py-1.5 bg-[#111111] border border-[#2A2A2A] hover:border-[#C9A86A] text-xs font-sans text-[#B8B6B0] hover:text-[#F7F5F2] rounded-lg transition-colors cursor-pointer"
-                              >
-                                {sug}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                    </div>
-
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </motion.div>
-      </AnimatePresence>
-
-      {/* Slide-over Quick View Drawer for result preview */}
-      <QuickViewDrawer
-        product={quickViewProduct}
-        isOpen={Boolean(quickViewProduct)}
-        onClose={() => setQuickViewProduct(null)}
-      />
-    </>
+      )}
+    </AnimatePresence>
   );
 }

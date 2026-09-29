@@ -194,9 +194,23 @@ export default function CategoriesPage() {
                             <Tag className="w-3.5 h-3.5 text-[#444]" />
                           )}
                         </div>
-                        <span className="text-[13px] font-medium text-[#E8E4DF]">
-                          {cat.name}
-                        </span>
+                        <div>
+                          <span className="text-[13px] font-medium text-[#E8E4DF]">
+                            {cat.name}
+                          </span>
+                          {cat.subcategories && cat.subcategories.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {cat.subcategories.map((sub) => (
+                                <span
+                                  key={sub.id}
+                                  className="text-[10px] bg-[#181818] text-[#9E9A93] px-1.5 py-0.5 rounded-[4px] border border-[#252525]"
+                                >
+                                  {sub.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="py-3.5 px-5 hidden md:table-cell">

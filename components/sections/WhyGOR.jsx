@@ -1,106 +1,71 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { ShieldCheck, Crown, Truck, RefreshCw } from "lucide-react";
-import { BlurReveal, Stagger, ScaleStaggerItem } from "@/components/ui/Motion";
-import { EASING, DURATION } from "@/lib/motion";
-
-const FEATURES = [
+const STANDARDS = [
   {
-    id: "premium-fabrics",
-    icon: ShieldCheck,
-    title: "Premium Fabrics",
-    description: "Thoughtfully selected cottons, linen blends, and high-density knits built for daily wear.",
+    num: "01",
+    title: "PREMIUM FABRICS",
+    desc: "Selected natural fibers and balanced weaves chosen for natural handfeel, breathability, and enduring drape.",
   },
   {
-    id: "modern-fit",
-    icon: Crown,
-    title: "Modern Fit",
-    description: "Tailored for confidence. Fluid drapes, grandad collars, and effortless silhouettes.",
+    num: "02",
+    title: "REFINED CONSTRUCTION",
+    desc: "Reinforced structural stitching, collar shape retention, and clean seam finishing built for continuous daily rotation.",
   },
   {
-    id: "fast-delivery",
-    icon: Truck,
-    title: "Fast Delivery",
-    description: "Reliable nationwide shipping with real-time tracking and luxury packaging.",
+    num: "03",
+    title: "MODERN FIT",
+    desc: "Contemporary silhouettes proportioned to drape naturally—from intentional drop shoulders to effortless breaks.",
   },
   {
-    id: "easy-returns",
-    icon: RefreshCw,
-    title: "Easy Returns",
-    description: "Hassle-free returns and exchange options with convenient doorstep support.",
+    num: "04",
+    title: "EVERYDAY COMFORT",
+    desc: "Understated wearability engineered for morning-to-night movement while preserving architectural silhouette definition.",
   },
 ];
 
 export default function WhyGOR() {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <section
-      id="why-gor"
-      className="py-16 sm:py-24 bg-[#1B1F25] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]"
+      id="brand-values"
+      className="py-20 sm:py-28 bg-[#EFECE6] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
-      {/* Ambient Background */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-20"
-        style={{ background: "radial-gradient(circle at 50% 50%, rgba(201, 168, 106, 0.04) 0%, transparent 70%)" }}
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none z-0 opacity-10 blur-[160px]"
-        style={{ background: "radial-gradient(circle, #C9A86A 0%, transparent 70%)" }}
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
-
-        {/* Header */}
-        <BlurReveal className="text-center max-w-2xl mx-auto mb-16 sm:mb-24">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C9A86A]" />
-            <span className="font-sans text-xs uppercase tracking-[0.35em] text-[#C9A86A] font-semibold">
-              WHY GOR
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-14 sm:mb-16 pb-4 border-b border-[#D8D2C8] gap-2">
+          <div>
+            <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium block mb-2">
+              06 / PRINCIPLES
             </span>
+            <h2 className="font-editorial text-3xl sm:text-4xl font-normal text-[#111111] tracking-tight leading-tight">
+              THE GOR STANDARD
+            </h2>
           </div>
-          <h2 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-normal text-[#F7F5F2] tracking-tight leading-[1.05] mb-4">
-            CRAFTED FOR MODERN LIVING
-          </h2>
-          <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light tracking-[0.18em] leading-relaxed uppercase max-w-lg mx-auto">
-            Every garment is designed to combine premium quality, refined style and everyday comfort.
-          </p>
-        </BlurReveal>
+          <span className="font-mono text-xs text-[#716D66]">
+            [ FOUR PILLARS ]
+          </span>
+        </div>
 
-        {/* Feature Cards — staggered */}
-        <Stagger staggerDelay={0.09} className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-          {FEATURES.map((feat) => {
-            const Icon = feat.icon;
-            return (
-              <ScaleStaggerItem key={feat.id}>
-                <div className="group p-6 sm:p-8 bg-[#111111] border border-[#C9A86A]/15 hover:border-[#C9A86A]/40 rounded-[20px] transition-all duration-300 ease-out hover:-translate-y-1 shadow-md flex flex-col justify-between h-full">
-                  <div>
-                    <div className="mb-6 flex items-center justify-start">
-                      <Icon className="w-6 h-6 text-[#C9A86A] transition-transform duration-300 group-hover:scale-110" />
-                    </div>
-                    <h3 className="font-editorial text-xl sm:text-2xl font-normal text-[#F7F5F2] group-hover:text-[#C9A86A] transition-colors duration-300 leading-tight mb-2.5">
-                      {feat.title}
-                    </h3>
-                    <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light leading-relaxed mb-6">
-                      {feat.description}
-                    </p>
-                  </div>
-                  {/* Gold divider — expands on hover */}
-                  <div className="w-8 h-[1.5px] bg-[#C9A86A]/30 group-hover:w-full group-hover:bg-[#C9A86A] transition-all duration-500 ease-out" />
-                </div>
-              </ScaleStaggerItem>
-            );
-          })}
-        </Stagger>
-
-        {/* Manifesto Quote */}
-        <BlurReveal delay={0.3} className="mt-20 sm:mt-24 text-center border-t border-[#C9A86A]/15 pt-12 max-w-xl mx-auto">
-          <p className="font-editorial italic text-2xl sm:text-3xl text-[#C9A86A] font-normal tracking-tight">
-            &ldquo;Style that speaks before you do.&rdquo;
-          </p>
-        </BlurReveal>
-
+        {/* Tactile Typographic Visual System — Hairline Stone Dividers & Generous Spacing */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {STANDARDS.map((std) => (
+            <div
+              key={std.num}
+              className="border-t border-[#D8D2C8] pt-6 flex flex-col justify-between"
+            >
+              <div>
+                <span className="font-mono text-xs text-[#716D66] block mb-4">
+                  {std.num}
+                </span>
+                <h3 className="font-editorial text-xl sm:text-2xl font-normal text-[#111111] tracking-tight mb-3">
+                  {std.title}
+                </h3>
+                <p className="font-sans text-xs text-[#716D66] font-normal leading-relaxed">
+                  {std.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

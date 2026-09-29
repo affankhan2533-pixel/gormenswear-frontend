@@ -1,159 +1,185 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { BlurReveal, Stagger, StaggerItem } from "@/components/ui/Motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 const CATEGORIES = [
   {
-    id: "shirts",
-    title: "Shirts",
-    eyebrow: "SIGNATURE SELECTION",
-    description: "Refined grandad collars, Italian linen, and effortless tailored silhouettes.",
-    image: "/images/lookbook/image copy 3.png",
-    link: "/shop/shirts",
-    featured: true,
-    gridClass: "lg:col-span-2 lg:row-span-2",
-  },
-  {
-    id: "polos",
-    title: "Polos",
-    eyebrow: "MODERN ESSENTIALS",
-    description: "High-density knit polos with sleek ribbed collars.",
-    image: "/images/lookbook/image copy 4.png",
-    link: "/shop/polos",
-    featured: false,
-    gridClass: "lg:col-span-1 lg:row-span-1",
-  },
-  {
-    id: "t-shirts",
-    title: "T-Shirts",
-    eyebrow: "EVERYDAY LUXURY",
-    description: "Heavyweight organic cotton tees cut for modern confidence.",
+    index: "01",
+    name: "T-SHIRTS",
+    slug: "t-shirts",
     image: "/images/categories/gor-model-streetwear.webp",
-    link: "/shop/t-shirts",
-    featured: false,
-    gridClass: "lg:col-span-1 lg:row-span-1",
   },
   {
-    id: "trousers",
-    title: "Trousers",
-    eyebrow: "REFINED FITS",
-    description: "Single & double pleated trousers with fluid drape.",
+    index: "02",
+    name: "SHIRTS",
+    slug: "shirts",
+    image: "/images/lookbook/gor-lookbook-2.webp",
+  },
+  {
+    index: "03",
+    name: "POLOS",
+    slug: "polos",
+    image: "/images/lookbook/image copy 4.png",
+  },
+  {
+    index: "04",
+    name: "PANTS",
+    slug: "pants",
+    image: "/images/products/gor-codset-beige-prada.webp",
+  },
+  {
+    index: "05",
+    name: "TROUSERS",
+    slug: "trousers",
     image: "/images/lookbook/image copy 5.png",
-    link: "/shop/trousers",
-    featured: false,
-    gridClass: "lg:col-span-1 lg:row-span-1",
   },
   {
-    id: "outerwear",
-    title: "Outerwear",
-    eyebrow: "ATELIER COLLECTION",
-    description: "Architectural jackets and transitional luxury layers.",
+    index: "06",
+    name: "JACKETS",
+    slug: "jackets",
     image: "/images/lookbook/image copy 6.png",
-    link: "/shop/outerwear",
-    featured: false,
-    gridClass: "lg:col-span-1 lg:row-span-1",
   },
   {
-    id: "new-arrivals",
-    title: "New Arrivals",
-    eyebrow: "LATEST DROP",
-    description: "Discover our newest seasonal releases and limited pieces.",
-    image: "/images/lookbook/image copy 7.png",
-    link: "/new-arrivals",
-    featured: false,
-    gridClass: "lg:col-span-1 lg:row-span-1",
+    index: "07",
+    name: "JERSEYS",
+    slug: "jerseys",
+    image: "/images/lookbook/image.png",
   },
 ];
 
 export default function Categories() {
-  return (
-    <section 
-      id="categories" 
-      className="py-16 sm:py-24 lg:py-28 bg-[#14171C] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]"
-    >
-      {/* Background Depth & Soft Radial Gold Ambient Lighting */}
-      <div 
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none z-0 opacity-20 blur-[150px]"
-        style={{ background: "radial-gradient(circle, rgba(201, 168, 106, 0.05) 0%, transparent 70%)" }}
-      />
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeCategory = CATEGORIES[activeIndex];
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* ── Section Header ── */}
-        <BlurReveal className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
-          <div className="inline-flex items-center gap-2 mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#C9A86A]" />
-            <span className="font-sans text-xs uppercase tracking-[0.35em] text-[#C9A86A] font-semibold">
-              CURATED COLLECTIONS
-            </span>
+  return (
+    <section
+      id="categories"
+      className="py-20 sm:py-28 lg:py-32 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+    >
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-12 sm:mb-16 pb-4 border-b border-[#D8D2C8]">
+          <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium">
+            01 / DIRECTORY
+          </span>
+          <span className="font-mono text-xs text-[#716D66]">
+            [ 07 SILHOUETTES ]
+          </span>
+        </div>
+
+        {/* ── Desktop & Tablet: Editorial Interactive Split Directory ── */}
+        <div className="hidden md:grid md:grid-cols-12 gap-8 lg:gap-14 items-center">
+          {/* Left Column: Large Typographic Navigation List (7 Cols) */}
+          <div className="md:col-span-7 divide-y divide-[#D8D2C8]">
+            {CATEGORIES.map((cat, idx) => {
+              const isActive = activeIndex === idx;
+
+              return (
+                <div
+                  key={cat.slug}
+                  onMouseEnter={() => setActiveIndex(idx)}
+                  className="group py-3.5 sm:py-4 transition-colors"
+                >
+                  <Link
+                    href={`/category/${cat.slug}`}
+                    className="flex items-baseline justify-between w-full"
+                  >
+                    <div className="flex items-baseline gap-4 sm:gap-6">
+                      <span className="font-mono text-xs text-[#716D66] group-hover:text-[#111111] transition-colors">
+                        {cat.index}
+                      </span>
+                      <h3
+                        className={`font-editorial text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight transition-colors duration-200 ${
+                          isActive ? "text-[#111111]" : "text-[#716D66] group-hover:text-[#111111]"
+                        }`}
+                      >
+                        {cat.name}
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <ArrowRight
+                        className={`w-4 h-4 transition-all duration-200 ${
+                          isActive
+                            ? "opacity-100 translate-x-0 text-[#111111]"
+                            : "opacity-0 -translate-x-2 text-[#716D66] group-hover:opacity-100 group-hover:translate-x-0"
+                        }`}
+                      />
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
 
-          <h2 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-normal text-[#F7F5F2] tracking-tight leading-[1.05] mb-4">
-            SHOP BY CATEGORY
-          </h2>
-
-          <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light tracking-[0.18em] leading-relaxed uppercase max-w-xl mx-auto">
-            Discover collections designed for every occasion.
-          </p>
-        </BlurReveal>
-
-        {/* ── Editorial Asymmetrical Grid ── */}
-        <Stagger staggerDelay={0.06} className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {CATEGORIES.map((cat) => (
-            <StaggerItem key={cat.id} blur className={`group relative overflow-hidden bg-[#111111] border border-[#C9A86A]/15 hover:border-[#C9A86A]/40 rounded-[16px] transition-[border-color] duration-500 cursor-pointer shadow-md ${cat.gridClass} ${
-              cat.featured ? "col-span-2" : "col-span-1"
-            }`}>
-              <Link href={cat.link} className="block w-full h-full">
-                <div className={`relative w-full h-full ${cat.featured ? "min-h-[360px] sm:min-h-[480px] lg:min-h-[640px]" : "aspect-[4/5]"} overflow-hidden bg-[#111111]`}>
-                  
+          {/* Right Column: Large Category Imagery Preview Frame (5 Cols) */}
+          <div className="md:col-span-5 relative">
+            <Link
+              href={`/category/${activeCategory.slug}`}
+              className="block relative aspect-[3/4] w-full rounded-[2px] overflow-hidden bg-[#E9E5DD] border border-[#D8D2C8] group cursor-pointer shadow-[0_8px_30px_rgba(17,17,17,0.06)]"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeCategory.slug}
+                  initial={{ opacity: 0, scale: 1.02 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="absolute inset-0"
+                >
                   <Image
-                    src={cat.image}
-                    alt={cat.title}
+                    src={activeCategory.image}
+                    alt={activeCategory.name}
                     fill
-                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 50vw"
-                    className="object-cover object-center filter brightness-[0.95] contrast-[1.04] group-hover:scale-[1.04] transition-transform duration-700 ease-out"
-                    loading="lazy"
+                    sizes="(max-width: 1024px) 45vw, 35vw"
+                    className="object-cover object-top filter contrast-[1.02] group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                    priority
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#151515]/75 via-transparent to-transparent pointer-events-none" />
+                </motion.div>
+              </AnimatePresence>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0B]/92 via-[#0B0B0B]/35 to-transparent opacity-90 group-hover:opacity-85 transition-opacity duration-500 pointer-events-none" />
-
-                  <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10">
-                    <span className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-semibold bg-[#0B0B0B]/75 backdrop-blur-md px-3 py-1 rounded-full border border-[#C9A86A]/20 shadow-sm">
-                      {cat.eyebrow}
-                    </span>
-                  </div>
-
-                  <div className="absolute inset-0 p-5 sm:p-7 lg:p-9 flex flex-col justify-end z-10 transition-transform duration-300 group-hover:-translate-y-1">
-                    <h3 className={`font-editorial font-normal text-[#F7F5F2] tracking-tight group-hover:text-[#C9A86A] transition-colors duration-300 ${
-                      cat.featured ? "text-3xl sm:text-5xl lg:text-6xl mb-2" : "text-2xl sm:text-3xl lg:text-4xl mb-1.5"
-                    }`}>
-                      {cat.title}
-                    </h3>
-
-                    <p className={`font-sans text-xs text-[#B8B6B0] font-light leading-relaxed mb-4 hidden sm:block max-w-md ${
-                      cat.featured ? "opacity-100" : "opacity-85"
-                    }`}>
-                      {cat.description}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#C9A86A] font-semibold inline-flex items-center gap-1.5">
-                        <span>Explore</span>
-                        <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-300 ease-out" />
-                      </span>
-                    </div>
-                    <div className="mt-2.5 w-0 group-hover:w-full h-[1.5px] bg-[#C9A86A] transition-all duration-500 ease-out" />
-                  </div>
+              {/* Bottom Frame Details */}
+              <div className="absolute bottom-6 left-6 right-6 z-10 flex items-end justify-between">
+                <div>
+                  <span className="font-mono text-[10px] text-[#D8D2C8] block mb-1">
+                    SELECTED SILHOUETTE
+                  </span>
+                  <h4 className="font-editorial text-2xl text-[#F5F2EC]">
+                    {activeCategory.name}
+                  </h4>
                 </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </Stagger>
 
+                <div className="w-9 h-9 rounded-[2px] bg-[#151515]/90 border border-white/20 flex items-center justify-center text-[#F5F2EC] group-hover:bg-[#111111] transition-colors">
+                  <ArrowUpRight className="w-4 h-4" />
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Mobile: Editorial Vertical Directory ── */}
+        <div className="md:hidden divide-y divide-[#D8D2C8] border-b border-[#D8D2C8]">
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat.slug}
+              href={`/category/${cat.slug}`}
+              className="flex items-center justify-between py-4 group active:opacity-70 transition-opacity"
+            >
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-xs text-[#716D66]">{cat.index}</span>
+                <h3 className="font-editorial text-2xl font-normal text-[#111111]">
+                  {cat.name}
+                </h3>
+              </div>
+              <ArrowRight className="w-4 h-4 text-[#716D66]" />
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

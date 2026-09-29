@@ -1,32 +1,28 @@
 "use client";
 
-import { X, RotateCcw } from "lucide-react";
+import { X } from "lucide-react";
 
-export default function PlpFilterChips({
-  activeChips = [],
-  onResetFilters = () => {},
-}) {
-  if (!activeChips || activeChips.length === 0) return null;
+export default function PlpFilterChips({ activeChips = [], onResetFilters = () => {} }) {
+  if (!activeChips.length) return null;
 
   return (
-    <div className="mb-6 flex items-center gap-2 flex-wrap bg-[#111111] border border-[#2A2A2A] rounded-xl p-3.5 select-none text-xs font-sans shadow-md">
-      <span className="text-[10px] uppercase tracking-wider text-[#B8B6B0] font-bold">
-        Active Filters ({activeChips.length}):
+    <div className="flex flex-wrap items-center gap-2 mb-6">
+      <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#716D66] mr-1">
+        ACTIVE FILTERS:
       </span>
-
       {activeChips.map((chip) => (
         <span
           key={chip.key}
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C9A86A]/15 border border-[#C9A86A]/40 text-[#C9A86A] font-medium"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#EFECE6] border border-[#D8D2C8] text-[#111111] font-sans text-xs"
         >
           <span>{chip.label}</span>
           <button
             type="button"
             onClick={chip.remove}
             aria-label={`Remove filter ${chip.label}`}
-            className="hover:text-white transition-colors cursor-pointer"
+            className="text-[#716D66] hover:text-[#111111] cursor-pointer"
           >
-            <X className="w-3 h-3" />
+            <X className="w-3 h-3 stroke-[1.5]" />
           </button>
         </span>
       ))}
@@ -34,9 +30,9 @@ export default function PlpFilterChips({
       <button
         type="button"
         onClick={onResetFilters}
-        className="font-sans text-xs uppercase tracking-wider text-[#B8B6B0] hover:text-[#C9A86A] underline font-bold ml-2 cursor-pointer flex items-center gap-1"
+        className="font-sans text-[11px] uppercase tracking-[0.15em] text-[#716D66] hover:text-[#111111] ml-2 underline underline-offset-4 cursor-pointer"
       >
-        <RotateCcw className="w-3 h-3" /> Clear All
+        CLEAR ALL
       </button>
     </div>
   );

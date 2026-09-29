@@ -7,6 +7,11 @@ const isDev = process.env.NODE_ENV !== "production";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: process.env.NEXT_DIST_DIR || ".next",
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  devIndicators: false,
   turbopack: {
     root: __dirname,
   },

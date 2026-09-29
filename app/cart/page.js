@@ -1,27 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ShoppingBag,
-  Trash2,
-  Plus,
-  Minus,
-  Tag,
-  ArrowRight,
-  Truck,
-  ShieldCheck,
-  RotateCcw,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Minus, Plus, Trash2, ArrowRight } from "lucide-react";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
-import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import CartDrawer from "@/components/ui/CartDrawer";
-import Button from "@/components/ui/Button";
-import { Container } from "@/components/ui/Section";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 
@@ -31,297 +16,208 @@ export default function CartPage() {
     updateQuantity,
     removeFromCart,
     subtotal,
-    discountAmount,
-    shipping,
-    tax,
-    grandTotal,
-    promoCode,
-    applyPromoCode,
     totalItemsCount,
   } = useCart();
 
-  const [promoInput, setPromoInput] = useState("");
-  const [promoMessage, setPromoMessage] = useState(null); // { type: 'success'|'error', text }
-
-  const handlePromoSubmit = (e) => {
-    e.preventDefault();
-    const result = applyPromoCode(promoInput.trim());
-    setPromoMessage({
-      type: result.success ? "success" : "error",
-      text: result.message,
-    });
-  };
-
-  /* ─── Empty State ─── */
-  if (cartItems.length === 0) {
-    return (
-      <>
-        <NoiseOverlay />
-        <Navbar />
-        <main className="min-h-screen bg-gor-black bg-noise text-gor-offwhite flex flex-col items-center justify-center pt-24 pb-20 px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-center max-w-md"
-          >
-            <div className="w-24 h-24 rounded-full border-2 border-gor-gold/30 bg-gor-card flex items-center justify-center mx-auto mb-8">
-              <ShoppingBag className="w-10 h-10 text-gor-gold/50" />
-            </div>
-            <span className="font-sans text-xs uppercase tracking-[0.3em] text-gor-gold font-medium flex items-center justify-center gap-2 mb-3">
-              <Sparkles className="w-3.5 h-3.5" /> Your Atelier Bag
-            </span>
-            <h1 className="font-serif text-4xl font-bold text-gor-offwhite mb-4">
-              YOUR BAG IS EMPTY
-            </h1>
-            <p className="text-sm text-gor-grey font-light leading-relaxed mb-8">
-              Explore our handcrafted co-ord sets, designer shirting, and statement outerwear to begin building your wardrobe.
-            </p>
-            <Link href="/shop">
-              <Button variant="primary" size="lg" icon={ArrowRight}>
-                Browse Collections
-              </Button>
-            </Link>
-          </motion.div>
-        </main>
-        <Footer />
-      </>
-    );
-  }
-
   return (
-    <>
-      <NoiseOverlay />
+    <div className="min-h-screen bg-[#F5F2EC] text-[#111111] flex flex-col selection:bg-[#111111] selection:text-[#F5F2EC]">
       <Navbar />
 
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="min-h-screen bg-gor-black bg-noise text-gor-offwhite pt-28 pb-20"
-      >
-        <Container>
-          {/* Header */}
-          <div className="mb-10">
-            <nav className="text-xs text-gor-grey font-sans uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Link href="/" className="hover:text-gor-gold">Home</Link>
-              <span>/</span>
-              <span className="text-gor-gold font-semibold">Shopping Bag</span>
-            </nav>
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="font-sans text-xs uppercase tracking-[0.3em] text-gor-gold font-medium">
-                  GOR Atelier
-                </span>
-                <h1 className="mt-1 font-serif text-4xl sm:text-5xl font-bold text-gor-offwhite">
-                  YOUR BAG ({totalItemsCount})
-                </h1>
-              </div>
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 sm:px-10 pt-28 sm:pt-36 pb-24">
+        {/* Subtle Breadcrumbs */}
+        <nav className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#716D66] mb-6 flex items-center gap-2">
+          <Link href="/" className="hover:text-[#111111] transition-colors">
+            HOME
+          </Link>
+          <span>/</span>
+          <span className="text-[#111111]">SHOPPING BAG</span>
+        </nav>
+
+        {/* Editorial Page Title */}
+        <div className="border-b border-[#D8D2C8] pb-6 mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-[0.3em] text-[#716D66] block mb-1">
+              CURRENT SELECTION
+            </span>
+            <h1 className="font-editorial text-4xl sm:text-5xl text-[#111111] font-normal tracking-tight">
+              SHOPPING BAG ({totalItemsCount})
+            </h1>
+          </div>
+          <Link
+            href="/shop"
+            className="font-sans text-xs uppercase tracking-[0.2em] text-[#716D66] hover:text-[#111111] transition-colors flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>CONTINUE BROWSING</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {cartItems.length === 0 ? (
+          /* Empty State */
+          <div className="py-20 text-center max-w-md mx-auto space-y-4">
+            <span className="font-mono text-xs uppercase tracking-[0.3em] text-[#716D66] block">
+              00 / EMPTY
+            </span>
+            <h2 className="font-editorial text-3xl sm:text-4xl font-normal text-[#111111]">
+              YOUR BAG IS EMPTY
+            </h2>
+            <p className="font-sans text-xs text-[#716D66] font-light leading-relaxed">
+              Explore our considered silhouettes, refined fabrics, and signature menswear collections.
+            </p>
+            <div className="pt-4">
               <Link
                 href="/shop"
-                className="text-xs uppercase tracking-[0.2em] text-gor-gold hover:text-gor-gold-light border-b border-gor-gold pb-0.5 transition-colors hidden sm:block"
+                className="inline-flex items-center justify-center px-8 py-3.5 bg-[#151515] text-[#F5F2EC] hover:bg-[#252525] font-sans text-xs uppercase tracking-[0.2em] font-medium transition-colors"
               >
-                Continue Shopping
+                EXPLORE SHOP
               </Link>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* ─── Left: Cart Items ─── */}
-            <div className="lg:col-span-7 space-y-4">
+        ) : (
+          /* Cart Content Grid */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+            {/* Left: Product List */}
+            <div className="lg:col-span-8 divide-y divide-[#D8D2C8]">
               <AnimatePresence>
-                {cartItems.map((item, idx) => (
-                  <motion.div
-                    key={`${item.id}-${item.selectedSize}-${item.selectedColor?.name}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -40, height: 0, marginBottom: 0 }}
-                    transition={{ duration: 0.35, delay: idx * 0.05 }}
-                    className="flex gap-4 sm:gap-6 bg-gor-card border border-gor-gold/15 p-4 sm:p-5 group"
-                  >
-                    {/* Product image */}
-                    <Link href={`/product/${item.id}`} className="flex-shrink-0">
-                      <div className="w-20 sm:w-28 aspect-[4/5] overflow-hidden border border-gor-gold/10">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-full h-full object-cover object-top luxury-image-filter group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    </Link>
+                {cartItems.map((item) => {
+                  const colorName =
+                    typeof item.selectedColor === "object"
+                      ? item.selectedColor?.name
+                      : item.selectedColor;
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between">
-                      <div className="flex items-start justify-between gap-2">
+                  return (
+                    <motion.div
+                      key={`${item.id || item._id}-${item.selectedSize}-${colorName}`}
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+                      className="py-6 first:pt-0 flex gap-5 sm:gap-6"
+                    >
+                      {/* Product Thumbnail */}
+                      <Link
+                        href={`/product/${item.id || item._id}`}
+                        className="relative w-24 sm:w-28 aspect-[3/4] bg-[#E9E5DD] overflow-hidden shrink-0 border border-[#D8D2C8]"
+                      >
+                        <Image
+                          src={item.image || "/images/lookbook/gor-lookbook-1.webp"}
+                          alt={item.name}
+                          fill
+                          unoptimized
+                          className="object-cover object-top"
+                        />
+                      </Link>
+
+                      {/* Item Details & Stepper */}
+                      <div className="flex-1 flex flex-col justify-between min-w-0">
                         <div>
-                          <Link href={`/product/${item.id}`}>
-                            <h3 className="font-serif text-sm sm:text-base font-semibold text-gor-offwhite hover:text-gor-gold transition-colors line-clamp-2 leading-snug">
-                              {item.name}
-                            </h3>
-                          </Link>
-                          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] uppercase tracking-widest text-gor-grey">
-                            <span>Size: <span className="text-gor-offwhite font-medium">{item.selectedSize}</span></span>
-                            {item.selectedColor && (
-                              <span className="flex items-center gap-1.5">
-                                Colour:
-                                <span
-                                  className="w-3 h-3 rounded-full border border-gor-gold/30 inline-block"
-                                  style={{ backgroundColor: item.selectedColor.hex }}
-                                />
-                                <span className="text-gor-offwhite font-medium">{item.selectedColor.name}</span>
-                              </span>
-                            )}
+                          <div className="flex items-start justify-between gap-3">
+                            <Link href={`/product/${item.id || item._id}`}>
+                              <h3 className="font-editorial text-xl sm:text-2xl text-[#111111] hover:text-[#8C7A6B] transition-colors leading-tight">
+                                {item.name}
+                              </h3>
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeFromCart(item.id || item._id, item.selectedSize, colorName)
+                              }
+                              className="text-[#716D66] hover:text-[#111111] transition-colors p-1 cursor-pointer"
+                              aria-label={`Remove ${item.name}`}
+                            >
+                              <Trash2 className="w-4 h-4 stroke-[1.5]" />
+                            </button>
+                          </div>
+
+                          <div className="font-sans text-xs text-[#716D66] mt-2 space-x-3">
+                            {colorName && <span>Color: {colorName}</span>}
+                            {colorName && item.selectedSize && <span>/</span>}
+                            {item.selectedSize && <span>Size: {item.selectedSize}</span>}
                           </div>
                         </div>
-                        {/* Remove */}
-                        <button
-                          onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor?.name ?? "default")}
-                          aria-label="Remove item"
-                          className="p-1.5 text-gor-grey hover:text-gor-rust transition-colors flex-shrink-0"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
 
-                      <div className="flex items-center justify-between mt-4">
-                        {/* Quantity stepper */}
-                        <div className="flex items-center border border-gor-gold/25 bg-gor-black h-9">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.selectedSize, item.selectedColor?.name ?? "default", -1)}
-                            className="w-8 h-full flex items-center justify-center text-gor-grey hover:text-gor-gold transition-colors"
-                          >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="w-8 text-center font-sans text-xs font-bold text-gor-offwhite select-none">
-                            {item.quantity}
+                        {/* Bottom Row: Stepper & Price */}
+                        <div className="flex items-center justify-between pt-4">
+                          <div className="flex items-center border border-[#D8D2C8] bg-white h-8">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateQuantity(item.id || item._id, item.selectedSize, colorName, -1)
+                              }
+                              aria-label="Decrease quantity"
+                              className="w-8 h-full text-[#716D66] hover:text-[#111111] flex items-center justify-center cursor-pointer transition-colors"
+                            >
+                              <Minus className="w-3.5 h-3.5 stroke-[1.5]" />
+                            </button>
+                            <span className="w-8 text-center font-sans text-xs text-[#111111] font-medium">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateQuantity(item.id || item._id, item.selectedSize, colorName, 1)
+                              }
+                              aria-label="Increase quantity"
+                              className="w-8 h-full text-[#716D66] hover:text-[#111111] flex items-center justify-center cursor-pointer transition-colors"
+                            >
+                              <Plus className="w-3.5 h-3.5 stroke-[1.5]" />
+                            </button>
+                          </div>
+
+                          <span className="font-sans text-sm font-semibold text-[#111111]">
+                            {formatPrice((item.price || 0) * item.quantity)}
                           </span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.selectedSize, item.selectedColor?.name ?? "default", 1)}
-                            className="w-8 h-full flex items-center justify-center text-gor-grey hover:text-gor-gold transition-colors"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-
-                        {/* Line total */}
-                        <div className="text-right">
-                          <p className="font-sans text-base font-bold text-gor-gold">
-                            {formatPrice(item.price * item.quantity)}
-                          </p>
-                          {item.quantity > 1 && (
-                            <p className="text-[10px] text-gor-grey">
-                              {formatPrice(item.price)} each
-                            </p>
-                          )}
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
-
-              {/* Guarantees bar */}
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 border border-gor-gold/10 bg-gor-card p-5">
-                {[
-                  { icon: Truck, text: "Complimentary express shipping on orders over $1,000" },
-                  { icon: RotateCcw, text: "30-day hassle-free returns & exchanges" },
-                  { icon: ShieldCheck, text: "Delivered in GOR signature gift packaging" },
-                ].map(({ icon: Icon, text }) => (
-                  <div key={text} className="flex items-start gap-3 text-xs text-gor-grey">
-                    <Icon className="w-4 h-4 text-gor-gold flex-shrink-0 mt-0.5" />
-                    <span>{text}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
-            {/* ─── Right: Order Summary ─── */}
-            <div className="lg:col-span-5">
-              <div className="bg-gor-card border-2 border-gor-gold/30 p-6 sm:p-8 space-y-6 sticky top-28 gold-glow">
-                <h2 className="font-serif text-xl font-bold text-gor-offwhite border-b border-gor-gold/20 pb-5">
-                  ORDER SUMMARY
-                </h2>
+            {/* Right: Order Summary Sidebar */}
+            <div className="lg:col-span-4 bg-[#EFECE6] border border-[#D8D2C8] p-6 sm:p-8 space-y-6 sticky top-28">
+              <h2 className="font-editorial text-2xl font-normal text-[#111111]">
+                ORDER SUMMARY
+              </h2>
 
-                {/* Promo code */}
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-gor-grey mb-2 flex items-center gap-1.5">
-                    <Tag className="w-3.5 h-3.5 text-gor-gold" /> Promo Code
-                  </p>
-                  {promoCode ? (
-                    <div className="flex items-center justify-between bg-gor-gold/10 border border-gor-gold/40 px-4 py-3">
-                      <span className="text-xs font-mono font-bold text-gor-gold">{promoCode} — 15% OFF</span>
-                      <X className="w-4 h-4 text-gor-gold" />
-                    </div>
-                  ) : (
-                    <form onSubmit={handlePromoSubmit} className="flex gap-2">
-                      <input
-                        type="text"
-                        value={promoInput}
-                        onChange={(e) => setPromoInput(e.target.value)}
-                        placeholder="GORVIP or ATELIER15"
-                        className="flex-1 bg-gor-black border border-gor-gold/20 px-3 py-2.5 text-xs text-gor-offwhite placeholder-gor-grey/50 focus:outline-none focus:border-gor-gold font-mono uppercase tracking-widest"
-                      />
-                      <button
-                        type="submit"
-                        className="px-4 py-2.5 bg-gor-gold text-gor-navy text-xs font-bold uppercase tracking-wider hover:bg-gor-gold-light transition-colors"
-                      >
-                        Apply
-                      </button>
-                    </form>
-                  )}
-                  {promoMessage && (
-                    <p className={`text-[11px] mt-2 font-medium ${promoMessage.type === "success" ? "text-gor-gold" : "text-gor-rust"}`}>
-                      {promoMessage.text}
-                    </p>
-                  )}
+              <div className="space-y-3 font-sans text-xs text-[#716D66] border-b border-[#D8D2C8] pb-4">
+                <div className="flex items-center justify-between">
+                  <span>Subtotal</span>
+                  <span className="text-[#111111] font-medium">{formatPrice(subtotal)}</span>
                 </div>
-
-                {/* Cost breakdown */}
-                <div className="space-y-3 text-xs text-gor-grey pt-2 border-t border-gor-gold/10">
-                  <div className="flex justify-between">
-                    <span>Subtotal ({totalItemsCount} items)</span>
-                    <span className="text-gor-offwhite font-medium">{formatPrice(subtotal)}</span>
-                  </div>
-                  {discountAmount > 0 && (
-                    <div className="flex justify-between text-gor-gold">
-                      <span>VIP Atelier Discount (15%)</span>
-                      <span>−{formatPrice(discountAmount)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span>Express Shipping</span>
-                    <span className="text-gor-offwhite font-medium">
-                      {shipping === 0 ? "Complimentary" : formatPrice(shipping)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Estimated Tax (8%)</span>
-                    <span className="text-gor-offwhite font-medium">{formatPrice(tax)}</span>
-                  </div>
-                  <div className="flex justify-between text-base font-bold text-gor-gold pt-3 border-t border-gor-gold/20">
-                    <span>Total</span>
-                    <span>{formatPrice(grandTotal)}</span>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <span>Standard Shipping</span>
+                  <span className="text-[#111111] font-medium uppercase text-[11px]">
+                    Complimentary
+                  </span>
                 </div>
+              </div>
 
-                {/* CTA */}
-                <Link href="/checkout" className="block">
-                  <Button variant="primary" size="lg" icon={ArrowRight} className="w-full">
-                    Proceed to Checkout
-                  </Button>
+              <div className="flex items-center justify-between font-sans text-sm text-[#111111]">
+                <span className="font-semibold uppercase tracking-wider">Total</span>
+                <span className="font-bold text-base">{formatPrice(subtotal)}</span>
+              </div>
+
+              <div className="pt-2 space-y-3">
+                <Link
+                  href="/checkout"
+                  className="block w-full py-4 bg-[#151515] text-[#F5F2EC] hover:bg-[#252525] font-sans text-xs uppercase tracking-[0.2em] font-medium text-center transition-colors shadow-sm"
+                >
+                  CHECKOUT / ORDER
                 </Link>
 
-                <p className="text-[10px] text-center text-gor-grey/60 flex items-center justify-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-gor-gold" /> 256-bit SSL Encrypted &amp; Secure
+                <p className="font-sans text-[11px] text-[#716D66] text-center leading-relaxed">
+                  Complimentary 7-day exchanges & secure express delivery across India.
                 </p>
               </div>
             </div>
           </div>
-        </Container>
-      </motion.main>
+        )}
+      </main>
 
       <CartDrawer />
       <Footer />
-    </>
+    </div>
   );
 }

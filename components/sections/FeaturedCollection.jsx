@@ -1,150 +1,166 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { formatPrice } from "@/lib/utils";
 
-const FEATURED_COLLECTIONS = [
-  {
-    id: "business-essentials",
-    title: "Business Essentials",
-    eyebrow: "SIGNATURE TAILORING",
-    description: "Refined grandad collars, Italian linen shirts, and crisp pleated trousers for effortless authority.",
-    image: "/images/lookbook/image copy 3.png",
-    link: "/shop/shirts",
-  },
-  {
-    id: "weekend-edit",
-    title: "Weekend Edit",
-    eyebrow: "OFF-DUTY LUXURY",
-    description: "High-density knit polos and fluid relaxed silhouettes designed for effortless Saturdays.",
-    image: "/images/lookbook/image copy 4.png",
-    link: "/shop/polos",
-  },
-  {
-    id: "statement-pieces",
-    title: "Statement Pieces",
-    eyebrow: "ATELIER SHOWCASE",
-    description: "Bold co-ord sets and architectural outerwear crafted to deliver instant confidence.",
-    image: "/images/lookbook/image copy 6.png",
-    link: "/shop/outerwear",
-  },
-  {
-    id: "everyday-classics",
-    title: "Everyday Classics",
-    eyebrow: "WARDROBE FOUNDATIONS",
-    description: "Heavyweight organic cotton tees and timeless essential cuts built for daily style.",
-    image: "/images/categories/gor-model-streetwear.webp",
-    link: "/shop/t-shirts",
-  },
-];
+const FEATURED_ITEM = {
+  id: "gor-tee-essential-oversized",
+  name: "GOR Essential Oversized Tee",
+  slug: "gor-essential-oversized-tee",
+  category: "T-Shirts",
+  price: 1499,
+  compareAtPrice: 1999,
+  description:
+    "A relaxed silhouette cut with dropped shoulders and a structured neck line designed for versatile everyday layering.",
+  colors: [
+    { name: "Black", hex: "#151515", image: "/images/products/t-shirts/oversized/gor-essential-oversized-tee/black-01.webp" },
+    { name: "White", hex: "#F5F2EC", image: "/images/products/t-shirts/oversized/gor-essential-oversized-tee/white-01.webp" },
+    { name: "Green", hex: "#263E2E", image: "/images/products/t-shirts/oversized/gor-essential-oversized-tee/green-01.webp" },
+    { name: "Navy", hex: "#18233C", image: "/images/products/t-shirts/oversized/gor-essential-oversized-tee/navy-01.webp" },
+  ],
+};
 
 export default function FeaturedCollection() {
+  const [activeColorIndex, setActiveColorIndex] = useState(0);
+  const activeColor = FEATURED_ITEM.colors[activeColorIndex];
+
   return (
-    <section 
-      id="featured-collections" 
-      className="py-16 sm:py-24 bg-[#14171C] text-[#F7F5F2] overflow-hidden relative selection:bg-[#C9A86A] selection:text-[#0E1013]"
+    <section
+      id="featured-product"
+      className="py-20 sm:py-28 lg:py-36 bg-[#EFECE6] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
-      {/* Background Depth Accents */}
-      <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full pointer-events-none z-0 opacity-20 blur-[160px]"
-        style={{ background: "radial-gradient(circle, rgba(201, 168, 106, 0.04) 0%, transparent 70%)" }}
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* ── Centered Editorial Header (No Sparkles Icon) ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center max-w-2xl mx-auto mb-16 sm:mb-24"
-        >
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C9A86A]" />
-            <span className="font-sans text-xs uppercase tracking-[0.35em] text-[#C9A86A] font-semibold">
-              CURATED COLLECTIONS
-            </span>
-          </div>
-
-          <h2 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-normal text-[#F7F5F2] tracking-tight leading-[1.05] mb-4">
-            FEATURED COLLECTIONS
-          </h2>
-
-          <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light tracking-[0.18em] leading-relaxed uppercase max-w-lg mx-auto">
-            Explore curated edits designed for every occasion.
-          </p>
-        </motion.div>
-
-        {/* ── 2 × 2 Editorial Campaign Grid (Desktop: 2-Cols | Mobile: 1-Col Stacked) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
-          {FEATURED_COLLECTIONS.map((col, idx) => (
-            <motion.div
-              key={col.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                duration: 0.75,
-                delay: idx * 0.1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="group relative overflow-hidden bg-[#111111] border border-[#C9A86A]/15 hover:border-[#C9A86A]/40 rounded-[24px] transition-all duration-500 cursor-pointer shadow-lg"
-            >
-              {/* Entire Campaign Card is Clickable */}
-              <Link href={col.link} className="block w-full h-full relative">
-                <div className="relative w-full min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] overflow-hidden bg-[#111111]">
-                  
-                  {/* Campaign Image — Consistent Editorial Filter & Max 1.03 Zoom */}
-                  <Image
-                    src={col.image}
-                    alt={col.title}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover object-center filter brightness-[0.95] contrast-[1.04] group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                    loading="lazy"
-                  />
-
-                  {/* Dark Scrim Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0B]/95 via-[#0B0B0B]/35 to-transparent opacity-90 group-hover:opacity-85 transition-opacity duration-500 pointer-events-none" />
-
-                  {/* Top Eyebrow Badge */}
-                  <div className="absolute top-5 left-5 sm:top-7 sm:left-7 z-10">
-                    <span className="font-sans text-[9.5px] sm:text-[10px] uppercase tracking-[0.25em] text-[#C9A86A] font-semibold bg-[#0B0B0B]/75 backdrop-blur-md px-3.5 py-1 rounded-full border border-[#C9A86A]/20 shadow-sm">
-                      {col.eyebrow}
-                    </span>
-                  </div>
-
-                  {/* Bottom Content Area */}
-                  <div className="absolute inset-0 p-6 sm:p-9 lg:p-10 flex flex-col justify-end z-10 transition-transform duration-300 group-hover:-translate-y-1.5">
-                    
-                    <h3 className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-normal text-[#F7F5F2] group-hover:text-[#C9A86A] transition-colors duration-300 leading-tight mb-2">
-                      {col.title}
-                    </h3>
-
-                    <p className="font-sans text-xs sm:text-sm text-[#B8B6B0] font-light leading-relaxed mb-5 max-w-md">
-                      {col.description}
-                    </p>
-
-                    {/* Explore Link with +6px Arrow Slide */}
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#C9A86A] font-semibold inline-flex items-center gap-1.5">
-                        <span>Explore Collection</span>
-                        <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-300 ease-out text-[#C9A86A]" />
-                      </span>
-                    </div>
-
-                    {/* Gold Underline Reveal Animation on Hover */}
-                    <div className="mt-3 w-0 group-hover:w-full h-[1.5px] bg-[#C9A86A] transition-all duration-500 ease-out" />
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-12 sm:mb-16 pb-4 border-b border-[#D8D2C8]">
+          <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium">
+            03 / THE GOR EDIT
+          </span>
+          <span className="font-mono text-xs text-[#716D66]">
+            [ FEATURED PIECE ]
+          </span>
         </div>
 
+        {/* Magazine Editorial Spread Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* LEFT: Large Architectural Product Canvas (7 Cols) */}
+          <div className="lg:col-span-7 relative">
+            <div className="relative aspect-[4/5] w-full rounded-[2px] overflow-hidden bg-[#E9E5DD] border border-[#D8D2C8] shadow-[0_8px_30px_rgba(17,17,17,0.06)]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeColor.name}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={activeColor.image}
+                    alt={`${FEATURED_ITEM.name} in ${activeColor.name}`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 58vw"
+                    className="object-cover object-center filter contrast-[1.02]"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#151515]/60 via-transparent to-transparent pointer-events-none" />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Minimal Bottom Tag */}
+              <div className="absolute bottom-5 left-5 z-10 font-mono text-[11px] text-[#F5F2EC] uppercase tracking-wider">
+                <span className="text-[#D8D2C8] mr-2">SHADE:</span>
+                <span>{activeColor.name}</span>
+              </div>
+            </div>
+
+            {/* Thumbnail Selectors */}
+            <div className="flex gap-2.5 mt-4">
+              {FEATURED_ITEM.colors.map((c, idx) => (
+                <button
+                  key={c.name}
+                  type="button"
+                  onClick={() => setActiveColorIndex(idx)}
+                  className={`relative w-16 h-20 rounded-[2px] overflow-hidden border transition-all cursor-pointer ${
+                    activeColorIndex === idx
+                      ? "border-[#111111] ring-1 ring-[#111111]"
+                      : "border-[#D8D2C8] opacity-60 hover:opacity-100"
+                  }`}
+                  aria-label={`View ${c.name}`}
+                >
+                  <Image src={c.image} alt={c.name} fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT: Fashion Editorial Product Information (5 Cols) */}
+          <div className="lg:col-span-5 flex flex-col justify-center text-left py-2">
+            <div className="space-y-6">
+              <div>
+                <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#716D66] font-medium block mb-2">
+                  {FEATURED_ITEM.category}
+                </span>
+                <h2 className="font-editorial text-3xl sm:text-5xl font-normal text-[#111111] tracking-tight leading-[1.08] mb-3">
+                  {FEATURED_ITEM.name}
+                </h2>
+                <div className="flex items-baseline gap-3">
+                  <span className="font-sans text-2xl font-semibold text-[#111111] tabular-nums">
+                    {formatPrice(FEATURED_ITEM.price)}
+                  </span>
+                  <span className="font-sans text-sm text-[#716D66] line-through tabular-nums">
+                    {formatPrice(FEATURED_ITEM.compareAtPrice)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Short Approved Product Description */}
+              <p className="font-sans text-xs sm:text-sm text-[#716D66] font-normal leading-relaxed">
+                {FEATURED_ITEM.description}
+              </p>
+
+              {/* Color Options */}
+              <div className="pt-2">
+                <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#716D66] block mb-2.5">
+                  COLOR OPTIONS
+                </span>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  {FEATURED_ITEM.colors.map((c, idx) => (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => setActiveColorIndex(idx)}
+                      className={`h-8 px-3.5 rounded-[2px] text-xs font-sans flex items-center gap-2 transition-all cursor-pointer border ${
+                        activeColorIndex === idx
+                          ? "bg-[#151515] text-[#F5F2EC] border-[#151515]"
+                          : "bg-transparent text-[#111111] border-[#D8D2C8] hover:border-[#111111]"
+                      }`}
+                    >
+                      <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: c.hex }} />
+                      <span>{c.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Architectural SHOP PRODUCT CTA */}
+              <div className="pt-4 border-t border-[#D8D2C8]">
+                <Link href={`/product/${FEATURED_ITEM.slug}`} className="inline-block w-full sm:w-auto">
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto h-[50px] px-10 bg-[#151515] hover:bg-[#2A2A2A] text-[#F5F2EC] font-sans text-xs uppercase tracking-[0.22em] font-medium transition-colors flex items-center justify-center gap-3 cursor-pointer"
+                  >
+                    <span>SHOP PRODUCT</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

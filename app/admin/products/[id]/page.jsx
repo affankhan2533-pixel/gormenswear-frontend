@@ -50,6 +50,7 @@ export default function ProductEditorPage() {
   const [savedAt, setSavedAt] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tagsInput, setTagsInput] = useState("");
+  const [colorsInput, setColorsInput] = useState("");
 
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -66,7 +67,12 @@ export default function ProductEditorPage() {
     if (!prod) {
       setNotFound(true);
     } else {
-      setForm(prod);
+      setForm({
+        ...prod,
+        colors: prod.colors || [],
+        sizes: prod.sizes || [],
+        subcategoryId: prod.subcategoryId || "",
+      });
     }
     setLoading(false);
   }, [productId]);
@@ -126,17 +132,50 @@ export default function ProductEditorPage() {
     );
   };
 
+  const handleColorsAdd = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const val = colorsInput.trim().replace(/,/g, "");
+      if (val && !(form.colors || []).includes(val)) {
+        set("colors", [...(form.colors || []), val]);
+        setColorsInput("");
+      }
+    }
+  };
+
+  const handleRemoveColor = (colToRemove) => {
+    set(
+      "colors",
+      (form.colors || []).filter((c) => c !== colToRemove)
+    );
+  };
+
+  const handleToggleSize = (sz) => {
+    const current = form.sizes || [];
+    set(
+      "sizes",
+      current.includes(sz) ? current.filter((s) => s !== sz) : [...current, sz]
+    );
+  };
+
   const handleSave = async () => {
     if (!form) return;
     setSaving(true);
     try {
       const cat = categories.find((c) => c.id === form.categoryId);
+      const subcat = (cat?.subcategories || []).find((s) => s.id === form.subcategoryId);
       const col = collections.find((c) => c.id === form.collectionId);
 
       const updated = await productService.updateProduct(productId, {
         ...form,
         category: cat?.name || form.category,
+        categorySlug: cat?.slug || form.categorySlug || "",
+        subcategoryId: form.subcategoryId || null,
+        subcategory: subcat?.name || form.subcategory || "",
+        subcategorySlug: subcat?.slug || form.subcategorySlug || "",
         collection: col?.name || form.collection,
+        colors: form.colors || [],
+        sizes: form.sizes || [],
       });
 
       if (updated) {
@@ -157,6 +196,7 @@ export default function ProductEditorPage() {
     setSaving(true);
     try {
       const cat = categories.find((c) => c.id === form.categoryId);
+      const subcat = (cat?.subcategories || []).find((s) => s.id === form.subcategoryId);
       const col = collections.find((c) => c.id === form.collectionId);
 
       const updated = await productService.updateProduct(productId, {
@@ -164,7 +204,13 @@ export default function ProductEditorPage() {
         status: "Active",
         visibility: "Published",
         category: cat?.name || form.category,
+        categorySlug: cat?.slug || form.categorySlug || "",
+        subcategoryId: form.subcategoryId || null,
+        subcategory: subcat?.name || form.subcategory || "",
+        subcategorySlug: subcat?.slug || form.subcategorySlug || "",
         collection: col?.name || form.collection,
+        colors: form.colors || [],
+        sizes: form.sizes || [],
       });
       setForm(updated);
       setIsDirty(false);
@@ -451,46 +497,143 @@ export default function ProductEditorPage() {
             Organization
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={LABEL}>Category</label>
-              <select
-                value={form.categoryId || ""}
-                onChange={(e) => {
-                  const cat = categories.find((c) => c.id === e.target.value);
-                  set("categoryId", e.target.value);
-                  if (cat) set("category", cat.name);
-                }}
-                className={`${FIELD} cursor-pointer`}
-              >
-                <option value="">Select Category…</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className={LABEL}>Collection</label>
-              <select
-                value={form.collectionId || ""}
-                onChange={(e) => {
-                  const col = collections.find((c) => c.id === e.target.value);
-                  set("collectionId", e.target.value);
-                  if (col) set("collection", col.name);
-                }}
-                className={`${FIELD} cursor-pointer`}
-              >
-                <option value="">Select Collection…</option>
-                {collections.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          {(() => {
+            const selectedCat = categories.find((c) => c.id === form.categoryId);
+            const availableSubs = selectedCat?.subcategories || [];
+
+            return (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className={LABEL}>Category</label>
+                    <select
+                      value={form.categoryId || ""}
+                      onChange={(e) => {
+                        const cat = categories.find((c) => c.id === e.target.value);
+                        set("categoryId", e.target.value);
+                        set("subcategoryId", "");
+                        if (cat) {
+                          set("category", cat.name);
+                          set("categorySlug", cat.slug);
+                        }
+                      }}
+                      className={`${FIELD} cursor-pointer`}
+                    >
+                      <option value="">Select Category…</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={LABEL}>Subcategory</label>
+                    <select
+                      value={form.subcategoryId || ""}
+                      onChange={(e) => {
+                        const sub = availableSubs.find((s) => s.id === e.target.value);
+                        set("subcategoryId", e.target.value);
+                        if (sub) {
+                          set("subcategory", sub.name);
+                          set("subcategorySlug", sub.slug);
+                        }
+                      }}
+                      disabled={!selectedCat || availableSubs.length === 0}
+                      className={`${FIELD} cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed`}
+                    >
+                      <option value="">
+                        {selectedCat && availableSubs.length > 0
+                          ? "Select Subcategory…"
+                          : "No subcategories"}
+                      </option>
+                      {availableSubs.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={LABEL}>Collection</label>
+                    <select
+                      value={form.collectionId || ""}
+                      onChange={(e) => {
+                        const col = collections.find((c) => c.id === e.target.value);
+                        set("collectionId", e.target.value);
+                        if (col) set("collection", col.name);
+                      }}
+                      className={`${FIELD} cursor-pointer`}
+                    >
+                      <option value="">Select Collection…</option>
+                      {collections.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Colors & Sizes Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#1E1E1E]">
+                  <div>
+                    <label className={LABEL}>Colors (Multi-variant)</label>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {(form.colors || []).map((col) => (
+                        <span
+                          key={col}
+                          className="px-2 py-1 bg-[#1E1E1E] text-[#E8E4DF] text-[11px] rounded-[6px] flex items-center gap-1 border border-[#2A2A2A]"
+                        >
+                          {col}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveColor(col)}
+                            className="hover:text-rose-400"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Type color (e.g. Black) and press Enter…"
+                      value={colorsInput}
+                      onChange={(e) => setColorsInput(e.target.value)}
+                      onKeyDown={handleColorsAdd}
+                      className={FIELD}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={LABEL}>Sizes Available</label>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {["XS", "S", "M", "L", "XL", "XXL", "3XL"].map((sz) => {
+                        const active = (form.sizes || []).includes(sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => handleToggleSize(sz)}
+                            className={`px-3 py-1.5 rounded-[8px] text-xs font-semibold border transition-all cursor-pointer ${
+                              active
+                                ? "bg-[#C8A45D]/20 border-[#C8A45D] text-[#C8A45D]"
+                                : "bg-[#0D0D0D] border-[#222] text-[#666] hover:text-[#E8E4DF] hover:border-[#333]"
+                            }`}
+                          >
+                            {sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
 
           <div>
             <label className={LABEL}>Tags</label>

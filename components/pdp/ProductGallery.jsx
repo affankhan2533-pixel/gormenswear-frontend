@@ -3,49 +3,39 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Maximize2,
-  Heart,
-  Search,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Play,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 
 export default function ProductGallery({
   mediaList = [],
-  productName = "Luxury Garment",
-  badge = null,
+  productName = "Garment",
+  selectedColor = null,
   isWishlisted = false,
   onWishlistToggle = () => {},
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
-  const [wishlistBurst, setWishlistBurst] = useState(false);
-
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  // Keyboard navigation for Fullscreen Lightbox
+  // When color changes, check if any image filename or label matches the color name
   useEffect(() => {
-    if (!isFullscreen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") setIsFullscreen(false);
-      if (e.key === "ArrowLeft") {
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : mediaList.length - 1));
-      }
-      if (e.key === "ArrowRight") {
-        setSelectedIndex((prev) => (prev < mediaList.length - 1 ? prev + 1 : 0));
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFullscreen, mediaList.length]);
+    if (!selectedColor || !mediaList.length) return;
+    const colorStr = (
+      typeof selectedColor === "string" ? selectedColor : selectedColor.name || ""
+    ).toLowerCase().trim();
 
-  // Touch handlers for swipe
+    if (!colorStr) return;
+
+    const matchedIdx = mediaList.findIndex((m) => {
+      const src = (m.src || "").toLowerCase();
+      return src.includes(colorStr);
+    });
+
+    if (matchedIdx !== -1) {
+      setSelectedIndex(matchedIdx);
+    }
+  }, [selectedColor, mediaList]);
+
+  // Touch handlers for mobile swipe
   const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
   const handleTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
   const handleTouchEnd = () => {
@@ -61,57 +51,31 @@ export default function ProductGallery({
     setTouchEnd(null);
   };
 
-  // Mouse move handler for Desktop Hover Zoom
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setMousePos({ x, y });
-  };
-
-  const handleWishlistClick = () => {
-    onWishlistToggle();
-    setWishlistBurst(true);
-    setTimeout(() => setWishlistBurst(false), 500);
-  };
-
   const currentMedia = mediaList[selectedIndex] || {
-    type: "image",
-    src: "/images/products/gor-codset-burgundy-alo.webp",
-    label: "Main View",
+    src: "/images/lookbook/gor-lookbook-1.webp",
   };
 
   const totalCount = mediaList.length || 1;
-  const counterText = `${String(selectedIndex + 1).padStart(2, "0")} / ${String(totalCount).padStart(2, "0")}`;
 
   return (
     <div className="flex flex-col-reverse lg:flex-row gap-4 lg:gap-6 w-full select-none">
-      {/* ── VERTICAL THUMBNAIL RAIL (Desktop Vertical Left / Mobile Horizontal Scroll) ── */}
+      {/* ── VERTICAL THUMBNAIL RAIL (Desktop Vertical Left / Mobile Horizontal) ── */}
       {mediaList.length > 1 && (
-        <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[720px] scrollbar-none pb-2 lg:pb-0 shrink-0">
-          {mediaList.map((mediaItem, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => {
-                setSelectedIndex(idx);
-                setIsZoomed(false);
-              }}
-              aria-label={`Select product image ${idx + 1}`}
-              className={`relative w-16 lg:w-20 aspect-[3/4] rounded-lg border transition-all duration-300 overflow-hidden shrink-0 cursor-pointer ${
-                selectedIndex === idx
-                  ? "border-[#C9A86A] scale-105 opacity-100 ring-2 ring-[#C9A86A]/40 shadow-lg"
-                  : "border-[#2A2A2A] opacity-60 hover:opacity-100 hover:border-white/40"
-              }`}
-            >
-              {mediaItem.type === "video" ? (
-                <div className="w-full h-full bg-[#111111] flex items-center justify-center text-[#C9A86A] relative">
-                  <Play className="w-5 h-5 fill-[#C9A86A]" />
-                  <span className="absolute bottom-1 right-1 font-mono text-[8px] bg-black/80 px-1 rounded text-white">
-                    VID
-                  </span>
-                </div>
-              ) : (
+        <div className="flex lg:flex-col gap-2.5 overflow-x-auto lg:overflow-y-auto lg:max-h-[640px] scrollbar-none pb-1 lg:pb-0 shrink-0">
+          {mediaList.map((mediaItem, idx) => {
+            const isSelected = selectedIndex === idx;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setSelectedIndex(idx)}
+                aria-label={`View image ${idx + 1} of ${productName}`}
+                className={`relative w-16 lg:w-20 aspect-[3/4] bg-[#E9E5DD] overflow-hidden border transition-all duration-200 shrink-0 cursor-pointer ${
+                  isSelected
+                    ? "border-[#111111] opacity-100 ring-1 ring-[#111111]"
+                    : "border-[#D8D2C8] opacity-60 hover:opacity-100 hover:border-[#111111]"
+                }`}
+              >
                 <Image
                   src={mediaItem.src}
                   alt={`${productName} thumbnail ${idx + 1}`}
@@ -120,178 +84,86 @@ export default function ProductGallery({
                   unoptimized
                   className="object-cover object-top"
                 />
-              )}
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       )}
 
-      {/* ── HERO IMAGE STAGE ── */}
+      {/* ── LARGE PRIMARY IMAGE STAGE (3:4 Ratio) ── */}
       <div
-        className="relative aspect-[3/4] w-full bg-[#111111] border border-[#2A2A2A] rounded-2xl overflow-hidden group flex-1 shadow-2xl"
+        className="relative aspect-[3/4] w-full bg-[#E9E5DD] border border-[#D8D2C8] overflow-hidden flex-1 group"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsZoomed(true)}
-        onMouseLeave={() => setIsZoomed(false)}
       >
-        {/* Animated Image Swap */}
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedIndex}
             initial={{ opacity: 0.85 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0.85 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.2 }}
             className="w-full h-full relative"
           >
-            {currentMedia.type === "video" ? (
-              <video
-                src={currentMedia.src}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover object-top"
-              />
-            ) : (
-              <div
-                className="w-full h-full overflow-hidden cursor-zoom-in relative"
-                onClick={() => setIsFullscreen(true)}
-              >
-                <div
-                  className="w-full h-full transition-transform duration-300 ease-out"
-                  style={{
-                    transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-                    transform: isZoomed ? "scale(1.75)" : "scale(1)",
-                  }}
-                >
-                  <Image
-                    src={currentMedia.src}
-                    alt={productName}
-                    fill
-                    priority={selectedIndex === 0}
-                    sizes="(max-width: 1024px) 100vw, 55vw"
-                    unoptimized
-                    className="object-cover object-top filter brightness-[0.98] contrast-[1.02]"
-                  />
-                </div>
-              </div>
-            )}
+            <Image
+              src={currentMedia.src}
+              alt={`${productName} - Image ${selectedIndex + 1}`}
+              fill
+              priority
+              unoptimized
+              className="object-cover object-top"
+            />
           </motion.div>
         </AnimatePresence>
 
-        {/* ── REFINEMENT #4: IMAGE COUNTER ── */}
-        <div className="absolute top-4 left-4 z-10 font-mono text-[10px] font-bold uppercase tracking-widest bg-[#0B0B0B]/85 text-[#F7F5F2] px-3 py-1.5 rounded-md border border-[#2A2A2A] backdrop-blur-md shadow-md">
-          {counterText}
-        </div>
-
-        {/* Dynamic Badge */}
-        {badge && (
-          <div className="absolute top-4 left-24 z-10 font-sans text-[9px] uppercase tracking-[0.2em] font-extrabold bg-[#D86A32]/95 text-[#F7F5F2] px-3 py-1.5 border border-[#D86A32]/50 rounded-md backdrop-blur-md shadow-md">
-            {badge}
-          </div>
-        )}
-
-        {/* Wishlist Toggle with Burst */}
+        {/* Wishlist Button top-right */}
         <button
           type="button"
-          onClick={handleWishlistClick}
-          aria-label="Toggle Wishlist"
-          className={`absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-[#0B0B0B]/85 border border-[#2A2A2A] flex items-center justify-center text-[#F7F5F2] hover:text-[#C9A86A] transition-all duration-200 backdrop-blur-md cursor-pointer shadow-lg ${
-            wishlistBurst ? "scale-125 ring-4 ring-[#C9A86A]/40" : "active:scale-95"
-          }`}
+          onClick={onWishlistToggle}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="absolute top-4 right-4 z-20 p-2.5 bg-[#F5F2EC]/90 border border-[#D8D2C8] text-[#111111] hover:bg-[#F5F2EC] transition-colors cursor-pointer"
         >
           <Heart
-            className={`w-4 h-4 transition-colors ${
-              isWishlisted ? "fill-[#C9A86A] text-[#C9A86A]" : ""
+            className={`w-4 h-4 stroke-[1.5] ${
+              isWishlisted ? "fill-[#111111] text-[#111111]" : ""
             }`}
           />
         </button>
 
-        {/* ── REFINEMENT #4: ZOOM INDICATOR ── */}
-        <div className="absolute bottom-4 left-4 z-10 font-sans text-[10px] uppercase tracking-wider text-[#B8B6B0] bg-[#0B0B0B]/85 px-3 py-1.5 rounded-full border border-[#2A2A2A] backdrop-blur-md hidden sm:flex items-center gap-1.5">
-          <Search className="w-3 h-3 text-[#C9A86A]" />
-          <span>{isZoomed ? "Zoom Active" : "Hover to Zoom"}</span>
-        </div>
+        {/* Counter bottom-left */}
+        {totalCount > 1 && (
+          <div className="absolute bottom-4 left-4 z-20 bg-[#F5F2EC]/90 border border-[#D8D2C8] px-2.5 py-1 font-mono text-[10px] text-[#111111] tracking-widest uppercase">
+            {String(selectedIndex + 1).padStart(2, "0")} / {String(totalCount).padStart(2, "0")}
+          </div>
+        )}
 
-        {/* ── REFINEMENT #4: FULLSCREEN ICON ── */}
-        <button
-          type="button"
-          onClick={() => setIsFullscreen(true)}
-          aria-label="Open Fullscreen Gallery"
-          className="absolute bottom-4 right-4 z-10 p-2.5 rounded-full bg-[#0B0B0B]/85 border border-[#2A2A2A] text-[#F7F5F2] hover:text-[#C9A86A] transition-colors backdrop-blur-md cursor-pointer flex items-center justify-center shadow-lg hover:scale-105 active:scale-95"
-        >
-          <Maximize2 className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* ── FULLSCREEN LIGHTBOX MODAL ── */}
-      <AnimatePresence>
-        {isFullscreen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-8"
-          >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setIsFullscreen(false)}
-              aria-label="Close Lightbox"
-              className="absolute top-6 right-6 z-10 p-3 rounded-full bg-[#111111] border border-[#2A2A2A] text-[#F7F5F2] hover:text-[#C9A86A] transition-colors cursor-pointer shadow-lg"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* Lightbox Counter Header */}
-            <div className="absolute top-6 left-6 z-10 font-mono text-xs text-[#C9A86A] font-bold uppercase tracking-widest bg-[#111111] border border-[#2A2A2A] px-4 py-2 rounded-lg">
-              {productName} • {counterText}
-            </div>
-
-            {/* Navigation Controls */}
+        {/* Mobile Navigation Arrows */}
+        {totalCount > 1 && (
+          <div className="lg:hidden absolute inset-y-0 inset-x-2 flex items-center justify-between pointer-events-none">
             <button
               type="button"
               onClick={() =>
-                setSelectedIndex((prev) => (prev > 0 ? prev - 1 : mediaList.length - 1))
+                setSelectedIndex((prev) => (prev > 0 ? prev - 1 : totalCount - 1))
               }
               aria-label="Previous image"
-              className="absolute left-6 top-1/2 -translate-y-1/2 p-3.5 rounded-full bg-[#111111] border border-[#2A2A2A] text-[#F7F5F2] hover:text-[#C9A86A] transition-colors cursor-pointer hidden sm:flex shadow-xl"
+              className="p-1.5 bg-[#F5F2EC]/80 border border-[#D8D2C8] pointer-events-auto text-[#111111]"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-4 h-4 stroke-[1.5]" />
             </button>
             <button
               type="button"
               onClick={() =>
-                setSelectedIndex((prev) => (prev < mediaList.length - 1 ? prev + 1 : 0))
+                setSelectedIndex((prev) => (prev < totalCount - 1 ? prev + 1 : 0))
               }
               aria-label="Next image"
-              className="absolute right-6 top-1/2 -translate-y-1/2 p-3.5 rounded-full bg-[#111111] border border-[#2A2A2A] text-[#F7F5F2] hover:text-[#C9A86A] transition-colors cursor-pointer hidden sm:flex shadow-xl"
+              className="p-1.5 bg-[#F5F2EC]/80 border border-[#D8D2C8] pointer-events-auto text-[#111111]"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-4 h-4 stroke-[1.5]" />
             </button>
-
-            {/* Lightbox Image Box */}
-            <div className="max-w-4xl max-h-[85vh] w-full h-full relative flex items-center justify-center">
-              {currentMedia.type === "video" ? (
-                <video src={currentMedia.src} controls autoPlay className="max-w-full max-h-[85vh] rounded-lg" />
-              ) : (
-                <div className="relative w-full h-full max-h-[85vh]">
-                  <Image
-                    src={currentMedia.src}
-                    alt={productName}
-                    fill
-                    unoptimized
-                    className="object-contain rounded-lg"
-                  />
-                </div>
-              )}
-            </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

@@ -3,8 +3,7 @@
 import React, { useState, memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Heart, ShoppingBag, Eye } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 
@@ -16,142 +15,212 @@ function WhatsAppIcon(props) {
   );
 }
 
-function ProductCardComponent({ product, onQuickView, className = "" }) {
-  const { wishlist, toggleWishlist } = useCart();
+const COLOR_HEX_MAP = {
+  black: "#151515",
+  white: "#F5F2EC",
+  green: "#263E2E",
+  navy: "#18233C",
+  burgundy: "#4A121A",
+  "desert sand": "#C2B299",
+  charcoal: "#2C2F36",
+  onyx: "#19191B",
+  grey: "#6B7280",
+};
+
+function ProductCardComponent({ product, className = "" }) {
+  const { wishlist, toggleWishlist, addToCart } = useCart();
+  const [selectedColor, setSelectedColor] = useState(
+    Array.isArray(product?.colors) && product.colors.length > 0 ? product.colors[0] : null
+  );
   const [isHovered, setIsHovered] = useState(false);
 
   if (!product) return null;
 
   const isWishlisted = wishlist.includes(product.id || product._id);
-  const img1 = product.image || product.images?.[0] || product.img1 || "/images/products/gor-codset-burgundy-alo.webp";
 
-  const whatsappMsg = `Hi GOR Menswear,\n\nI'm interested in:\n${product.name}\n\nCan you please share availability and final price?`;
+  // Image resolution with smooth alternate on hover (300-500ms)
+  const defaultImg =
+    product?.imageUrl || product?.image || (Array.isArray(product?.images) ? product.images[0] : "/images/products/gor-codset-burgundy-alo.webp");
+  const alternateImg =
+    Array.isArray(product?.images) && product.images.length > 1 ? product.images[1] : defaultImg;
+
+  // Variant matching
+  let activeImage = defaultImg;
+  if (selectedColor && Array.isArray(product.images)) {
+    const matched = product.images.find((img) =>
+      img.toLowerCase().includes(selectedColor.toLowerCase())
+    );
+    if (matched) activeImage = matched;
+  }
+
+  const primarySrc = selectedColor ? activeImage : defaultImg;
+  const secondarySrc = selectedColor ? activeImage : alternateImg;
+
+  const handleColorSelect = (e, color) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedColor(color);
+  };
+
+  const whatsappMsg = `Hi GOR Menswear, I would like to inquire about: ${product.name}${
+    selectedColor ? ` (Color: ${selectedColor})` : ""
+  } - ${formatPrice(product.price)}.`;
   const whatsappUrl = `https://wa.me/918691921913?text=${encodeURIComponent(whatsappMsg)}`;
-
-  const displayBadge = product.badge || (product.isNew ? "NEW" : null);
-  const discountPercent =
-    product.originalPrice && product.originalPrice > product.price
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-      : null;
 
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group flex flex-col bg-[#1B1F25] border border-[rgba(200,167,106,0.15)] hover:border-[#C8A76A]/45 rounded-[14px] overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 shadow-lg hover:shadow-2xl relative ${className}`}
+      className={`group flex flex-col bg-transparent relative ${className}`}
     >
-      {/* 1. Image Stage */}
+      {/* ── 1. Image Canvas (Architectural 3:4 Crop — Image Dominates) ── */}
       <Link
         href={`/product/${product.slug || product.id || product._id}`}
-        className="relative aspect-[3/4] w-full overflow-hidden bg-[#1B1F25] block shrink-0"
+        className="relative aspect-[3/4] w-full overflow-hidden bg-[#E9E5DD] block"
       >
+        {/* Base Primary Image */}
         <Image
-          src={img1}
-          alt={product.name || "GOR Menswear Product"}
+          src={primarySrc}
+          alt={product.name || "GOR Menswear"}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          className={`object-cover object-top filter contrast-[1.02] transition-opacity duration-500 ease-out ${
+            isHovered && secondarySrc !== primarySrc ? "opacity-0" : "opacity-100"
+          }`}
           loading="lazy"
         />
 
-        {/* Subtle Dark Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F1115]/80 via-transparent to-transparent opacity-60 group-hover:opacity-75 transition-opacity duration-300" />
-
-        {/* Badge */}
-        {displayBadge && (
-          <span className="absolute top-2.5 left-2.5 font-sans text-[8.5px] uppercase tracking-[0.18em] bg-[#090909]/90 text-[#D86A32] px-2 py-0.5 border border-[#D86A32]/40 font-semibold rounded-[3px]">
-            {displayBadge}
-          </span>
+        {/* Alternate Image Cross-Fade on Hover (300-500ms) */}
+        {secondarySrc !== primarySrc && (
+          <Image
+            src={secondarySrc}
+            alt={`${product.name} alternate view`}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className={`object-cover object-top filter contrast-[1.02] transition-opacity duration-500 ease-out ${
+              isHovered ? "opacity-100" : "opacity-0"
+            }`}
+            loading="lazy"
+          />
         )}
 
-        {/* Wishlist */}
-        <motion.button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleWishlist(product.id || product._id);
-          }}
-          aria-label="Save to wishlist"
-          whileTap={{ scale: 0.85 }}
-          className="absolute top-2 right-2 z-10 w-[36px] h-[36px] sm:w-8 sm:h-8 rounded-full bg-[#090909]/80 border border-[#2A2A2A] flex items-center justify-center text-[#F8F6F3] hover:text-[#C8A45D] transition-colors duration-150 cursor-pointer"
-        >
-          <Heart
-            className={`w-3.5 h-3.5 transition-colors ${
-              isWishlisted ? "fill-[#C8A45D] text-[#C8A45D]" : ""
-            }`}
-          />
-        </motion.button>
-
-        {/* Quick View Button on Hover */}
-        {onQuickView && isHovered && (
+        {/* Quick Add Overlay on Desktop Hover — Architectural & Restrained */}
+        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-[#151515]/70 via-[#151515]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-center gap-2">
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onQuickView(product);
+              addToCart(product, "M", selectedColor ? { name: selectedColor } : null, 1);
             }}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3.5 py-1.5 bg-[#090909]/90 border border-[#C8A45D]/40 text-[#F8F6F3] hover:text-[#C8A45D] font-sans text-[10px] uppercase tracking-wider font-semibold rounded-full flex items-center gap-1.5 shadow-lg cursor-pointer whitespace-nowrap transition-colors"
+            className="flex-1 h-9 bg-[#F5F2EC] hover:bg-[#FFFFFF] text-[#111111] font-sans text-[10px] uppercase tracking-[0.2em] font-medium transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <Eye className="w-3.5 h-3.5" /> Quick View
+            <ShoppingBag className="w-3 h-3" />
+            <span>Add to Bag</span>
           </button>
-        )}
-      </Link>
-
-      {/* 2. Content & Pricing */}
-      <div className="p-2.5 sm:p-3 flex flex-col justify-between flex-1 bg-[#14171C]">
-        <div>
-          <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-[#C9A86A] font-semibold block mb-0.5">
-            {product.category || "SIGNATURE COLLECTION"}
-          </span>
-
-          <Link href={`/product/${product.slug || product.id || product._id}`}>
-            <h3 className="font-editorial text-xs sm:text-sm md:text-base font-normal text-[#F7F5F2] group-hover:text-[#C9A86A] transition-colors line-clamp-2 leading-[1.22] mb-1">
-              {product.name}
-            </h3>
-          </Link>
-
-          <div className="my-1 flex items-center justify-between gap-1">
-            <div className="flex items-baseline gap-1">
-              <span className="font-sans text-xs sm:text-sm md:text-base font-bold text-[#F7F5F2] price-display tabular-nums">
-                {formatPrice(product.price)}
-              </span>
-              {product.originalPrice && (
-                <span className="font-sans text-[10px] sm:text-[11px] text-[#B8B6B0]/60 line-through price-display tabular-nums">
-                  {formatPrice(product.originalPrice)}
-                </span>
-              )}
-            </div>
-            {discountPercent && (
-              <span className="font-sans text-[8px] sm:text-[8.5px] bg-[#D86A32]/15 text-[#D86A32] border border-[#D86A32]/30 px-1 py-0.5 rounded font-semibold uppercase tracking-wider shrink-0">
-                {discountPercent}% OFF
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* 3. Action Buttons */}
-        <div className="mt-2.5 pt-2 border-t border-[#C9A86A]/15 flex flex-row items-center gap-2">
-          <div className="flex-1 min-w-0">
-            <Link
-              href={`/product/${product.slug || product.id || product._id}`}
-              className="w-full h-[40px] rounded-[12px] bg-[#C9A86A] hover:bg-[#D4B57C] text-[#0E1013] font-sans text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-colors duration-150 flex items-center justify-center gap-1 px-1 sm:px-2 cursor-pointer shrink-0"
-            >
-              <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">Order</span>
-            </Link>
-          </div>
 
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 min-w-0 h-[40px] rounded-[12px] bg-transparent border border-[#C9A86A]/40 text-[#F7F5F2] hover:bg-[#25D366]/10 hover:border-[#25D366] hover:text-[#25D366] font-sans text-[9.5px] sm:text-[11px] uppercase tracking-wider font-semibold transition-all duration-150 flex items-center justify-center gap-1 px-1 sm:px-2 cursor-pointer group/wa shrink-0"
+            className="w-9 h-9 bg-[#F5F2EC]/90 hover:bg-[#FFFFFF] text-[#111111] hover:text-[#25D366] flex items-center justify-center transition-colors shrink-0"
+            title="Inquire on WhatsApp"
+            aria-label="WhatsApp"
           >
-            <WhatsAppIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C9A86A] group-hover/wa:text-[#25D366] transition-colors shrink-0" />
-            <span className="truncate">WhatsApp</span>
+            <WhatsAppIcon className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </Link>
+
+      {/* ── 2. Clean Editorial Catalog System Below Image ── */}
+      <div className="pt-3 pb-1 flex flex-col justify-between flex-1">
+        {/* Category & Wishlist Row */}
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <span className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#716D66] font-medium truncate">
+            {product.category || "COLLECTION"}
+          </span>
+
+          {/* Minimal Wishlist Icon */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleWishlist(product.id || product._id);
+            }}
+            aria-label="Wishlist"
+            className="w-5 h-5 flex items-center justify-center text-[#716D66] hover:text-[#111111] transition-colors cursor-pointer"
+          >
+            <Heart
+              className={`w-3.5 h-3.5 transition-colors stroke-[1.7] ${
+                isWishlisted ? "fill-[#111111] text-[#111111]" : ""
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Product Name */}
+        <Link href={`/product/${product.slug || product.id || product._id}`}>
+          <h3 className="font-editorial text-base sm:text-[17px] font-normal text-[#111111] group-hover:text-[#8C7A6B] transition-colors line-clamp-1 leading-snug">
+            {product.name}
+          </h3>
+        </Link>
+
+        {/* Price & Color Swatches Row */}
+        <div className="flex items-center justify-between gap-2 mt-1.5">
+          <div className="flex items-baseline gap-2">
+            <span className="font-sans text-xs sm:text-sm font-semibold text-[#111111] tabular-nums">
+              {formatPrice(product.price)}
+            </span>
+            {product.compareAtPrice && (
+              <span className="font-sans text-[11px] text-[#716D66] line-through tabular-nums">
+                {formatPrice(product.compareAtPrice)}
+              </span>
+            )}
+          </div>
+
+          {/* Subtle Color Swatches */}
+          {Array.isArray(product.colors) && product.colors.length > 1 && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              {product.colors.map((color) => {
+                const hex = COLOR_HEX_MAP[color.toLowerCase()] || "#333333";
+                const isSelected = selectedColor === color;
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={(e) => handleColorSelect(e, color)}
+                    className={`w-2.5 h-2.5 rounded-full transition-transform cursor-pointer border ${
+                      isSelected
+                        ? "scale-125 border-[#111111] ring-1 ring-[#111111]"
+                        : "border-[#D8D2C8] hover:scale-110"
+                    }`}
+                    style={{ backgroundColor: hex }}
+                    aria-label={`Color ${color}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Action Bar */}
+        <div className="sm:hidden mt-2.5 pt-2 border-t border-[#D8D2C8] flex items-center justify-between text-[11px] font-sans">
+          <button
+            type="button"
+            onClick={() => addToCart(product, "M", selectedColor ? { name: selectedColor } : null, 1)}
+            className="text-[#111111] uppercase tracking-wider font-semibold cursor-pointer"
+          >
+            + Add To Bag
+          </button>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#716D66] hover:text-[#25D366] uppercase tracking-wider text-[10px]"
+          >
+            WhatsApp →
           </a>
         </div>
       </div>
@@ -161,3 +230,4 @@ function ProductCardComponent({ product, onQuickView, className = "" }) {
 
 const ProductCard = memo(ProductCardComponent);
 export default ProductCard;
+

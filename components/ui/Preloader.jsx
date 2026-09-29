@@ -3,21 +3,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const LETTERS = [
-  { char: "G", color: "#284B7A", shadow: "rgba(40,75,122,0.55)" },
-  { char: "O", color: "#C9A96E", shadow: "rgba(201,169,110,0.7)" },
-  { char: "R", color: "#C85A32", shadow: "rgba(200,90,50,0.55)" },
-];
-
 export default function Preloader({ onComplete }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Hold for 800ms — enough for the G-O-R stagger to play
+    // Hold briefly for clean editorial transition
     const timer = setTimeout(() => {
       setLoading(false);
       if (onComplete) onComplete();
-    }, 800);
+    }, 650);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
@@ -26,74 +20,37 @@ export default function Preloader({ onComplete }) {
       {loading && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[99999] bg-[#080808] flex flex-col items-center justify-center pointer-events-none select-none overflow-hidden"
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed inset-0 z-[99999] bg-[#F5F2EC] flex flex-col items-center justify-center pointer-events-none select-none overflow-hidden"
         >
-          {/* Ambient radial gold glow behind logo */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          >
-            <div
-              style={{
-                width: 420,
-                height: 420,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(circle, rgba(200,167,106,0.09) 0%, rgba(200,167,106,0.02) 55%, transparent 72%)",
-              }}
-            />
-          </div>
-
-          {/* Logo letter trio */}
-          <div className="flex items-end tracking-tight font-serif font-black text-7xl sm:text-8xl leading-none relative z-10">
-            {LETTERS.map(({ char, color, shadow }, i) => (
-              <motion.span
-                key={char}
-                initial={{ opacity: 0, y: 22, scale: 0.85 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  duration: 0.65,
-                  delay: 0.12 * i,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                style={{
-                  color,
-                  filter: `drop-shadow(0 4px 22px ${shadow})`,
-                }}
-              >
-                {char}
-              </motion.span>
-            ))}
-          </div>
-
-          {/* Tagline */}
+          {/* Confident Architectural Brand Mark */}
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex items-center gap-2.5 mt-4 relative z-10"
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col items-center"
           >
-            <span className="w-8 h-[1px] bg-[#C9A96E]/50" />
-            <span className="font-sans tracking-[0.38em] text-[10px] sm:text-[11px] uppercase font-semibold text-[#C9A96E]/80">
-              Menswear
+            <span className="font-editorial text-5xl sm:text-6xl tracking-tight text-[#111111] font-normal">
+              GOR
             </span>
-            <span className="w-8 h-[1px] bg-[#C9A96E]/50" />
+            <span className="font-sans tracking-[0.35em] text-[10px] uppercase font-medium text-[#716D66] mt-2">
+              Modern Menswear
+            </span>
           </motion.div>
 
-          {/* Progress bar */}
+          {/* Minimal hairline loading rule */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.35, duration: 0.4 }}
-            className="mt-10 w-32 h-[2px] bg-white/[0.07] rounded-full overflow-hidden relative z-10"
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="mt-8 w-24 h-[1px] bg-[#D8D2C8] overflow-hidden"
           >
             <motion.div
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
-              transition={{ duration: 1.3, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
-              className="h-full rounded-full bg-gradient-to-r from-[#A8884D] via-[#C8A76A] to-[#D4B57C]"
+              transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+              className="h-full bg-[#111111]"
             />
           </motion.div>
         </motion.div>

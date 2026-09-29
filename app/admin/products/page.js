@@ -465,9 +465,14 @@ export default function ProductsPage() {
 
                       {/* Category */}
                       <td className="py-3 px-4 hidden md:table-cell">
-                        <span className="text-[#777] text-xs">
+                        <span className="text-[#888] text-xs block">
                           {product.category || "—"}
                         </span>
+                        {product.subcategory && (
+                          <span className="text-[10px] text-[#C8A45D] font-medium block mt-0.5">
+                            ↳ {product.subcategory}
+                          </span>
+                        )}
                       </td>
 
                       {/* Price */}

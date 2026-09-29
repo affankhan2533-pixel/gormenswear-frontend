@@ -46,7 +46,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#0F1115",
+  themeColor: "#F5F2EC",
 };
 
 export const metadata = {
@@ -112,9 +112,9 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${inter.variable} ${playfair.variable} ${manrope.variable} dark scroll-smooth`}
+      className={`${cormorant.variable} ${inter.variable} ${playfair.variable} ${manrope.variable} scroll-smooth`}
     >
-      <body className="bg-[#0A0A0A] text-[#F8F6F3] font-sans antialiased selection:bg-[#C9A96E] selection:text-[#0A0A0A] min-h-screen flex flex-col overflow-x-hidden">
+      <body className="bg-[#F5F2EC] text-[#111111] font-sans antialiased selection:bg-[#151515] selection:text-[#F5F2EC] min-h-screen flex flex-col overflow-x-hidden">
         <StructuredData type="Organization" />
         <StructuredData type="WebSite" />
         {/* Luxury atmosphere: grain texture */}

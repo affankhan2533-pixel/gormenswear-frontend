@@ -2,19 +2,17 @@
 
 import Link from "next/link";
 import {
-  CreditCard,
   Lock,
   Globe,
   ArrowUp,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
-import { Container } from "@/components/ui/Section";
 
 function SocialIcon({ type }) {
   const className = "w-4 h-4";
   if (type === "instagram") {
     return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
         <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
@@ -23,21 +21,21 @@ function SocialIcon({ type }) {
   }
   if (type === "twitter") {
     return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
       </svg>
     );
   }
   if (type === "facebook") {
     return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
       </svg>
     );
   }
   if (type === "youtube") {
     return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.56 49.56 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
         <path d="m10 15 5-3-5-3z" />
       </svg>
@@ -47,29 +45,28 @@ function SocialIcon({ type }) {
 }
 
 const SHOP_LINKS = [
+  { name: "T-Shirts", href: "/category/t-shirts" },
+  { name: "Shirts", href: "/category/shirts" },
+  { name: "Polos", href: "/category/polos" },
+  { name: "Pants", href: "/category/pants" },
+  { name: "Trousers", href: "/category/trousers" },
+  { name: "Jackets", href: "/category/jackets" },
+  { name: "Jerseys", href: "/category/jerseys" },
   { name: "All Collections", href: "/shop" },
-  { name: "New Arrivals", href: "/new-arrivals" },
-  { name: "Co-Ord Sets", href: "/shop/codset" },
-  { name: "Outerwear", href: "/shop/outerwear" },
-  { name: "Shirts", href: "/shop/shirts" },
-  { name: "Trousers", href: "/shop/trousers" },
-  { name: "Accessories", href: "/shop/accessories" },
 ];
 
 const COMPANY_LINKS = [
-  { name: "Our Story", href: "/about" },
-  { name: "Quality Standards", href: "/about" },
-  { name: "Biella Wool Mills", href: "/about" },
-  { name: "Flagship Store", href: "/contact" },
-  { name: "Contact Us", href: "/contact" },
+  { name: "Atelier", href: "/about" },
+  { name: "Manifesto", href: "/about" },
+  { name: "Inquiries", href: "/contact" },
+  { name: "Stockists", href: "/contact" },
 ];
 
-const CUSTOMER_CARE_LINKS = [
+const SUPPORT_LINKS = [
+  { name: "Client Care", href: "/contact" },
   { name: "Shopping Bag", href: "/cart" },
-  { name: "Express Checkout", href: "/checkout" },
   { name: "Member Account", href: "/account" },
   { name: "Saved Wishlist", href: "/wishlist" },
-  { name: "Customer Support", href: "/contact" },
 ];
 
 export default function Footer() {
@@ -78,35 +75,26 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#090909] text-[#8E8A85] pt-0 pb-16 relative overflow-hidden">
-      {/* Gold gradient top divider */}
-      <div
-        aria-hidden="true"
-        className="w-full h-px"
-        style={{
-          background:
-            "linear-gradient(to right, transparent 0%, rgba(200,167,106,0.4) 30%, rgba(200,167,106,0.6) 50%, rgba(200,167,106,0.4) 70%, transparent 100%)",
-        }}
-      />
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-20">
-        {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-10 pb-20 border-b border-white/[0.06]">
+    <footer className="bg-[#151515] text-[#D8D2C8] pt-16 sm:pt-20 pb-16 border-t border-[#262626] relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Top Grid: Brand + SHOP + COMPANY + SUPPORT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-10 pb-16 border-b border-[#262626]">
           {/* Brand Column */}
           <div className="lg:col-span-2 flex flex-col justify-between">
             <div>
-              <Logo size="lg" className="items-start" />
-              <p className="mt-6 font-sans text-xs text-[#8E8A85] font-light max-w-sm leading-relaxed tracking-wide">
-                Elevated men's fashion engineered with precision standards. Fine Italian wools, raw silks, and architectural silhouettes for the modern connoisseur.
+              <Logo size="lg" invert={true} className="items-start" />
+              <p className="mt-5 font-sans text-xs text-[#716D66] font-normal max-w-sm leading-relaxed tracking-wide">
+                Refined modern menswear defined by form, discipline, and everyday movement.
               </p>
             </div>
 
             {/* Social Icons */}
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-8 flex items-center gap-2.5">
               {[
-                { type: "instagram", href: "https://www.instagram.com/gormenswear/", label: "GOR Menswear on Instagram" },
-                { type: "twitter", href: "https://twitter.com/gormenswear", label: "GOR Menswear on Twitter" },
-                { type: "facebook", href: "https://facebook.com/gormenswear", label: "GOR Menswear on Facebook" },
-                { type: "youtube", href: "https://youtube.com/@gormenswear", label: "GOR Menswear on YouTube" },
+                { type: "instagram", href: "https://www.instagram.com/gormenswear/", label: "Instagram" },
+                { type: "twitter", href: "https://twitter.com/gormenswear", label: "Twitter" },
+                { type: "facebook", href: "https://facebook.com/gormenswear", label: "Facebook" },
+                { type: "youtube", href: "https://youtube.com/@gormenswear", label: "YouTube" },
               ].map(({ type, href, label }) => (
                 <a
                   key={type}
@@ -114,7 +102,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-9 h-9 rounded-full border border-white/[0.1] flex items-center justify-center text-[#8E8A85] hover:text-[#C9A96E] hover:border-[#C9A96E] hover:bg-[#C9A96E]/[0.06] transition-all duration-300"
+                  className="w-8 h-8 rounded-[2px] border border-[#2A2A2A] flex items-center justify-center text-[#716D66] hover:text-[#F5F2EC] hover:border-[#D8D2C8] transition-colors"
                 >
                   <SocialIcon type={type} />
                 </a>
@@ -122,17 +110,17 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Nav Column 1: Shop */}
+          {/* Column 1: SHOP */}
           <div>
-            <h4 className="font-sans text-xs font-semibold text-[#F4F1EA] uppercase tracking-[0.25em] mb-6">
-              Shop Collections
+            <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em] mb-5">
+              SHOP
             </h4>
-            <ul className="space-y-3.5 text-xs font-sans">
+            <ul className="space-y-3 text-xs font-sans">
               {SHOP_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   <Link
                     href={href}
-                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group link-underline-gold"
+                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block"
                   >
                     <span>{name}</span>
                   </Link>
@@ -141,17 +129,17 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Nav Column 2: Company */}
+          {/* Column 2: COMPANY */}
           <div>
-            <h4 className="font-sans text-xs font-semibold text-[#F4F1EA] uppercase tracking-[0.25em] mb-6">
-              Company
+            <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em] mb-5">
+              COMPANY
             </h4>
-            <ul className="space-y-3.5 text-xs font-sans">
+            <ul className="space-y-3 text-xs font-sans">
               {COMPANY_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   <Link
                     href={href}
-                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group link-underline-gold"
+                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block"
                   >
                     <span>{name}</span>
                   </Link>
@@ -160,17 +148,17 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Nav Column 3: Customer Support */}
+          {/* Column 3: SUPPORT */}
           <div>
-            <h4 className="font-sans text-xs font-semibold text-[#F4F1EA] uppercase tracking-[0.25em] mb-6">
-              Customer Support
+            <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em] mb-5">
+              SUPPORT
             </h4>
-            <ul className="space-y-3.5 text-xs font-sans">
-              {CUSTOMER_CARE_LINKS.map(({ name, href }) => (
+            <ul className="space-y-3 text-xs font-sans">
+              {SUPPORT_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   <Link
                     href={href}
-                    className="hover:text-[#C9A96E] transition-colors duration-300 relative inline-block group link-underline-gold"
+                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block"
                   >
                     <span>{name}</span>
                   </Link>
@@ -181,23 +169,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] text-[#8E8A85] font-sans">
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] text-[#716D66] font-sans">
           <div className="flex items-center gap-6 flex-wrap">
-            <span className="flex items-center gap-1.5 text-[#F4F1EA] font-medium">
-              <Globe className="w-3.5 h-3.5 text-[#C9A96E]" /> United States (USD $)
+            <span className="flex items-center gap-1.5 text-[#D8D2C8]">
+              <Globe className="w-3.5 h-3.5 text-[#716D66]" /> India (INR ₹)
             </span>
-            <span className="hidden sm:inline text-white/10">|</span>
+            <span className="hidden sm:inline text-[#2A2A2A]">|</span>
             <span className="flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-[#C9A96E]" /> 256-bit Encrypted Checkout
+              <Lock className="w-3.5 h-3.5 text-[#716D66]" /> Encrypted Checkout
             </span>
           </div>
 
-          {/* Payment Method Badges */}
-          <div className="flex items-center gap-2">
-            {["VISA", "MASTERCARD", "AMEX", "APPLE PAY"].map((pay) => (
+          {/* Payment Badges */}
+          <div className="flex items-center gap-1.5">
+            {["UPI", "VISA", "MASTERCARD", "AMEX"].map((pay) => (
               <span
                 key={pay}
-                className="px-2.5 py-1 text-[9px] font-semibold tracking-wider bg-[#121212] border border-white/[0.08] text-[#8E8A85] price-display"
+                className="px-2 py-0.5 text-[9px] font-mono tracking-wider bg-[#1B1B1B] border border-[#2A2A2A] text-[#716D66]"
               >
                 {pay}
               </span>
@@ -206,11 +194,11 @@ export default function Footer() {
 
           {/* Copyright & Scroll Top */}
           <div className="flex items-center gap-4">
-            <p>© {new Date().getFullYear()} GOR MENSWEAR Inc. All Rights Reserved.</p>
+            <p>© {new Date().getFullYear()} GOR MENSWEAR. ALL RIGHTS RESERVED.</p>
             <button
               onClick={scrollToTop}
               aria-label="Scroll to top"
-              className="p-2.5 bg-[#121212] border border-white/[0.1] hover:border-[#C9A96E] hover:shadow-[0_0_14px_rgba(200,167,106,0.2)] text-[#C9A96E] transition-all duration-300 rounded cursor-pointer"
+              className="p-2 bg-[#1B1B1B] border border-[#2A2A2A] hover:border-[#D8D2C8] text-[#D8D2C8] hover:text-[#F5F2EC] transition-colors rounded-[2px] cursor-pointer"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>

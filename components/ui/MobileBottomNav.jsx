@@ -12,11 +12,10 @@ export default function MobileBottomNav({ onOpenSearch }) {
   const pathname = usePathname();
   const { totalItemsCount, setIsCartOpen, wishlist } = useCart();
   const { user } = useAuth();
-  
+
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Scroll direction detection: Hide on scroll down, Show on scroll up
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -75,45 +74,33 @@ export default function MobileBottomNav({ onOpenSearch }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed bottom-0 left-0 right-0 z-[120] md:hidden bg-[#080808]/92 backdrop-blur-xl border-t border-white/[0.1] rounded-t-[20px] shadow-2xl px-2 py-2"
+          className="fixed bottom-0 left-0 right-0 z-[120] md:hidden bg-[#F5F2EC]/96 backdrop-blur-xl border-t border-[#D8D2C8] px-2 py-1.5"
         >
-          <div className="flex items-center justify-around h-[54px] max-w-md mx-auto">
+          <div className="flex items-center justify-around h-[50px] max-w-md mx-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
 
               const content = (
-                <div className="relative flex flex-col items-center justify-center w-full h-full py-1 group">
+                <div className="relative flex flex-col items-center justify-center w-full h-full py-1">
                   <div className="relative">
                     <Icon
-                      className={`w-5 h-5 transition-colors duration-300 ${
-                        item.isActive
-                          ? "text-[#C9A96E]"
-                          : "text-[#8E8A85] group-hover:text-[#F4F1EA]"
+                      className={`w-4 h-4 stroke-[1.5] transition-colors ${
+                        item.isActive ? "text-[#111111]" : "text-[#716D66]"
                       }`}
                     />
                     {item.badge > 0 && (
-                      <span className="absolute -top-1.5 -right-2.5 min-w-[15px] h-[15px] px-1 bg-[#C9A96E] text-[#090909] font-sans text-[9px] font-bold rounded-full flex items-center justify-center price-display">
+                      <span className="absolute -top-1.5 -right-2 min-w-[13px] h-[13px] px-0.5 bg-[#151515] text-[#F5F2EC] font-sans text-[8px] font-bold rounded-full flex items-center justify-center">
                         {item.badge}
                       </span>
                     )}
                   </div>
                   <span
-                    className={`font-sans text-[10px] uppercase tracking-wider mt-1 font-medium transition-colors duration-300 ${
-                      item.isActive
-                        ? "text-[#C9A96E]"
-                        : "text-[#8E8A85] group-hover:text-[#F4F1EA]"
+                    className={`font-sans text-[9px] uppercase tracking-[0.1em] mt-1 ${
+                      item.isActive ? "text-[#111111] font-semibold" : "text-[#716D66]"
                     }`}
                   >
                     {item.name}
                   </span>
-
-                  {/* Active Gold Indicator Dot */}
-                  {item.isActive && (
-                    <motion.span
-                      layoutId="bottomNavIndicator"
-                      className="absolute -bottom-1 w-1 h-1 bg-[#C9A96E] rounded-full"
-                    />
-                  )}
                 </div>
               );
 
@@ -123,8 +110,8 @@ export default function MobileBottomNav({ onOpenSearch }) {
                     key={item.name}
                     type="button"
                     onClick={onOpenSearch}
-                    aria-label="Open Search"
-                    className="flex-1 flex justify-center cursor-pointer min-h-[48px] items-center"
+                    aria-label="Open search"
+                    className="flex-1 cursor-pointer"
                   >
                     {content}
                   </button>
@@ -137,8 +124,8 @@ export default function MobileBottomNav({ onOpenSearch }) {
                     key={item.name}
                     type="button"
                     onClick={() => setIsCartOpen(true)}
-                    aria-label="Open Cart"
-                    className="flex-1 flex justify-center cursor-pointer min-h-[48px] items-center"
+                    aria-label="Open cart"
+                    className="flex-1 cursor-pointer"
                   >
                     {content}
                   </button>
@@ -146,11 +133,7 @@ export default function MobileBottomNav({ onOpenSearch }) {
               }
 
               return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex-1 flex justify-center min-h-[48px] items-center"
-                >
+                <Link key={item.name} href={item.href} className="flex-1">
                   {content}
                 </Link>
               );
