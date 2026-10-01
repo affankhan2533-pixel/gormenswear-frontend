@@ -45,10 +45,11 @@ function ProductCardComponent({ product, className = "" }) {
     Array.isArray(product?.images) && product.images.length > 1 ? product.images[1] : defaultImg;
 
   // Variant matching
+  const colorName = typeof selectedColor === "string" ? selectedColor : (selectedColor?.name || String(selectedColor || ""));
   let activeImage = defaultImg;
-  if (selectedColor && Array.isArray(product.images)) {
+  if (colorName && Array.isArray(product.images)) {
     const matched = product.images.find((img) =>
-      img.toLowerCase().includes(selectedColor.toLowerCase())
+      typeof img === "string" && img.toLowerCase().includes(colorName.toLowerCase())
     );
     if (matched) activeImage = matched;
   }
@@ -138,7 +139,7 @@ function ProductCardComponent({ product, className = "" }) {
         {/* Category & Wishlist Row */}
         <div className="flex items-center justify-between gap-2 mb-1">
           <span className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#716D66] font-medium truncate">
-            {product.category || "COLLECTION"}
+            {typeof product.category === "string" ? product.category : (product.category?.name || "COLLECTION")}
           </span>
 
           {/* Minimal Wishlist Icon */}
@@ -183,21 +184,22 @@ function ProductCardComponent({ product, className = "" }) {
           {/* Subtle Color Swatches */}
           {Array.isArray(product.colors) && product.colors.length > 1 && (
             <div className="flex items-center gap-1.5 shrink-0">
-              {product.colors.map((color) => {
-                const hex = COLOR_HEX_MAP[color.toLowerCase()] || "#333333";
-                const isSelected = selectedColor === color;
+              {product.colors.map((colorObj, idx) => {
+                const colorStr = typeof colorObj === "string" ? colorObj : (colorObj?.name || String(colorObj || ""));
+                const hex = (typeof colorObj === "object" && colorObj?.hex) || COLOR_HEX_MAP[colorStr.toLowerCase()] || "#333333";
+                const isSelected = selectedColor === colorObj || colorName === colorStr;
                 return (
                   <button
-                    key={color}
+                    key={colorStr + idx}
                     type="button"
-                    onClick={(e) => handleColorSelect(e, color)}
+                    onClick={(e) => handleColorSelect(e, colorStr)}
                     className={`w-2.5 h-2.5 rounded-full transition-transform cursor-pointer border ${
                       isSelected
                         ? "scale-125 border-[#111111] ring-1 ring-[#111111]"
                         : "border-[#D8D2C8] hover:scale-110"
                     }`}
                     style={{ backgroundColor: hex }}
-                    aria-label={`Color ${color}`}
+                    aria-label={`Color ${colorStr}`}
                   />
                 );
               })}

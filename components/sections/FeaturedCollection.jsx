@@ -66,10 +66,11 @@ export default function FeaturedCollection() {
   const colors =
     rawColors.length > 0
       ? rawColors.map((c, i) => {
-          const name = typeof c === "string" ? c : c.name;
-          const hex = typeof c === "object" && c.hex ? c.hex : COLOR_HEX_MAP[name.toLowerCase()] || "#333333";
+          const name = typeof c === "string" ? c : (c?.name || String(c || ""));
+          const nameLower = name.toLowerCase();
+          const hex = typeof c === "object" && c?.hex ? c.hex : COLOR_HEX_MAP[nameLower] || "#333333";
           const matchedImg =
-            rawImages.find((img) => img.toLowerCase().includes(name.toLowerCase())) || rawImages[i % rawImages.length];
+            rawImages.find((img) => typeof img === "string" && img.toLowerCase().includes(nameLower)) || rawImages[i % rawImages.length];
           return { name, hex, image: matchedImg };
         })
       : rawImages.map((img, i) => ({
