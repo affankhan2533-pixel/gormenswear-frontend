@@ -11,6 +11,7 @@ import { useCart } from "@/context/CartContext";
 const NewArrivals = dynamic(() => import("@/components/sections/NewArrivals"), { ssr: true });
 const FeaturedCollection = dynamic(() => import("@/components/sections/FeaturedCollection"), { ssr: true });
 const BrandStory = dynamic(() => import("@/components/sections/BrandStory"), { ssr: true });
+const LifestyleBanner = dynamic(() => import("@/components/sections/LifestyleBanner"), { ssr: true });
 const TrendingSlider = dynamic(() => import("@/components/sections/TrendingSlider"), { ssr: true });
 const WhyGOR = dynamic(() => import("@/components/sections/WhyGOR"), { ssr: true });
 const Newsletter = dynamic(() => import("@/components/sections/Newsletter"), { ssr: true });
@@ -44,6 +45,9 @@ export default function Home() {
 
         {/* 06. GOR BRAND STORY */}
         <BrandStory />
+
+        {/* EDITORIAL CAMPAIGN VIDEO BANNER */}
+        <LifestyleBanner />
 
         {/* 07. TRENDING PRODUCTS */}
         <TrendingSlider />

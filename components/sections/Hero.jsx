@@ -13,15 +13,17 @@ export default function Hero() {
     <section className="relative w-full h-[calc(100vh-64px)] min-h-[460px] max-h-[660px] sm:h-[100svh] sm:min-h-[640px] sm:max-h-[1120px] bg-[#151515] text-[#F5F2EC] overflow-hidden flex flex-col justify-end pb-8 sm:pb-16 lg:pb-24 px-5 sm:px-12 lg:px-16 selection:bg-[#D8D2C8] selection:text-[#111111]">
       {/* ── Background Fashion Campaign Media — Current GOR Visual Asset ── */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <Image
-          src="/images/categories/gor-model-streetwear.webp"
-          alt="GOR Menswear Current Campaign"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover filter contrast-[1.05] brightness-[0.85]"
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/images/categories/gor-model-streetwear.webp"
+          className="w-full h-full object-cover filter contrast-[1.05] brightness-[0.85]"
           style={{ objectPosition: "center 20%" }}
-        />
+        >
+          <source src="/videos/hero-campaign-1.mp4" type="video/mp4" />
+        </video>
 
         {/* Natural Cinematic Exposure — Scrim */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#151515]/95 via-[#151515]/35 to-[#151515]/45 pointer-events-none z-10" />
