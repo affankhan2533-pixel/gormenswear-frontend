@@ -27,11 +27,11 @@ export default function WhyGOR() {
   return (
     <section
       id="brand-values"
-      className="py-20 sm:py-28 bg-[#EFECE6] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+      className="py-12 sm:py-24 bg-[#EFECE6] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-14 sm:mb-16 pb-4 border-b border-[#D8D2C8] gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-16 pb-4 border-b border-[#D8D2C8] gap-2">
           <div>
             <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium block mb-2">
               06 / PRINCIPLES

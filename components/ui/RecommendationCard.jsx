@@ -9,7 +9,7 @@ import { formatPrice } from "@/lib/utils";
 function RecommendationCardComponent({ product, className = "" }) {
   if (!product) return null;
 
-  const img = product.image || product.images?.[0] || product.img1 || "/images/products/gor-codset-burgundy-alo.webp";
+  const img = product.image || product.images?.[0] || product.img1 || "/images/categories/t-shirts/image.png";
   const pId = product.slug || product.id || product._id;
 
   return (

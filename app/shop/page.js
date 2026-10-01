@@ -63,13 +63,13 @@ function ShopContent() {
   const [inStockOnly, setInStockOnly] = useState(false);
 
   // Price Limit & Grid Columns
-  const [priceLimit, setPriceLimit] = useState(1000);
+  const [priceLimit, setPriceLimit] = useState(50000);
   const [gridCols, setGridCols] = useState(4);
 
   // UI state
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [visibleCount, setVisibleCount] = useState(48);
 
   // Synchronize when query params change
   useEffect(() => {
@@ -135,11 +135,12 @@ function ShopContent() {
       result = result.filter((p) => {
         const catSlug = (p.categorySlug || "").toLowerCase().replace(/[^a-z0-9]/g, "");
         const catName = (p.category || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const catId = String(p.categoryId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
         return (
           catSlug === normalizedCat ||
           catName === normalizedCat ||
-          catName.includes(normalizedCat) ||
-          normalizedCat.includes(catName)
+          catId === normalizedCat ||
+          catId === `cat${normalizedCat}`
         );
       });
     }

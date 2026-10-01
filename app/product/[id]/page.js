@@ -208,9 +208,12 @@ function ProductDetailContent({ idParam }) {
           {/* RIGHT: Product Information (Section 13) */}
           <div className="lg:col-span-5 space-y-6 lg:pl-4">
             {/* Category Eyebrow */}
-            <span className="font-sans text-[11px] uppercase tracking-[0.25em] text-[#716D66] font-medium block">
+            <Link
+              href={`/category/${(product.categorySlug || product.category || "shop").toLowerCase()}`}
+              className="font-sans text-[11px] uppercase tracking-[0.25em] text-[#716D66] hover:text-[#111111] transition-colors font-medium block"
+            >
               {product.category || "THE GOR COLLECTION"}
-            </span>
+            </Link>
 
             {/* Product Name (Editorial Serif) */}
             <h1 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#111111] font-normal tracking-tight leading-[1.08]">

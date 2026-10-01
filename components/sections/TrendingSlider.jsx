@@ -36,11 +36,11 @@ export default function TrendingSlider() {
   return (
     <section
       id="trending"
-      className="py-20 sm:py-28 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+      className="py-12 sm:py-24 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         {/* Section Header with Quiet Swiping Cue */}
-        <div className="flex items-end justify-between mb-10 sm:mb-14 pb-4 border-b border-[#D8D2C8]">
+        <div className="flex items-end justify-between mb-8 sm:mb-14 pb-4 border-b border-[#D8D2C8]">
           <div>
             <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium block mb-2">
               05 / CURATION
@@ -55,16 +55,16 @@ export default function TrendingSlider() {
           </span>
         </div>
 
-        {/* Horizontal Editorial Product Rail — Natural Drag/Swipe, No Giant Carousel Arrows */}
+        {/* Horizontal Editorial Product Rail */}
         <div
           ref={railRef}
-          className="flex gap-6 sm:gap-8 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-5 px-5 sm:mx-0 sm:px-0"
+          className="flex gap-5 sm:gap-8 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-5 px-5 sm:mx-0 sm:px-0"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {distinctTrending.map((product) => (
             <div
               key={product.id || product._id || product.slug}
-              className="w-[78vw] sm:w-[320px] lg:w-[calc(33.333%-22px)] shrink-0 snap-start"
+              className="w-[82vw] min-[375px]:w-[78vw] sm:w-[320px] lg:w-[calc(33.333%-22px)] shrink-0 snap-start"
             >
               <ProductCard product={product} />
             </div>

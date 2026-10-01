@@ -4,43 +4,40 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
+import Image from "next/image";
+
 export default function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section className="relative w-full h-[100svh] min-h-[640px] max-h-[1120px] bg-[#151515] text-[#F5F2EC] overflow-hidden flex flex-col justify-end pb-12 sm:pb-16 lg:pb-24 px-6 sm:px-12 lg:px-16 selection:bg-[#D8D2C8] selection:text-[#111111]">
-      {/* ── Background Fashion Campaign Media (Dominates Screen with Strong Crop) ── */}
+    <section className="relative w-full h-[calc(100vh-64px)] min-h-[460px] max-h-[660px] sm:h-[100svh] sm:min-h-[640px] sm:max-h-[1120px] bg-[#151515] text-[#F5F2EC] overflow-hidden flex flex-col justify-end pb-8 sm:pb-16 lg:pb-24 px-5 sm:px-12 lg:px-16 selection:bg-[#D8D2C8] selection:text-[#111111]">
+      {/* ── Background Fashion Campaign Media — Current GOR Visual Asset ── */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <motion.video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/images/lookbook/gor-lookbook-1.webp"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: shouldReduceMotion ? 0.2 : 1.2, ease: "easeOut" }}
-          className="w-full h-full object-cover filter contrast-[1.05] brightness-[0.88]"
-          style={{ objectPosition: "center 24%" }}
-        >
-          <source src="/videos/hero-campaign-1.mp4" type="video/mp4" />
-        </motion.video>
+        <Image
+          src="/images/categories/gor-model-streetwear.webp"
+          alt="GOR Menswear Current Campaign"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover filter contrast-[1.05] brightness-[0.85]"
+          style={{ objectPosition: "center 20%" }}
+        />
 
-        {/* Natural Cinematic Exposure — Minimal Restrained Scrim, No Heavy Black Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#151515]/80 via-transparent to-[#151515]/30 pointer-events-none z-10" />
+        {/* Natural Cinematic Exposure — Scrim */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#151515]/95 via-[#151515]/35 to-[#151515]/45 pointer-events-none z-10" />
       </div>
 
       {/* ── Architectural Editorial Campaign Framing ── */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-end justify-between gap-8 sm:gap-12">
+      <div className="relative z-20 w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-12">
         <div className="max-w-2xl">
           {/* Brand Eyebrow */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-3 sm:mb-4"
+            className="mb-2 sm:mb-4"
           >
-            <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#D8D2C8] font-medium">
+            <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.35em] text-[#D8D2C8] font-medium">
               GOR
             </span>
           </motion.div>
@@ -50,7 +47,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="font-editorial text-4xl sm:text-6xl md:text-7xl lg:text-[80px] font-normal leading-[1.02] tracking-tight text-[#F5F2EC] mb-4 sm:mb-5"
+            className="font-editorial text-3xl min-[360px]:text-4xl min-[410px]:text-5xl sm:text-6xl md:text-7xl lg:text-[80px] font-normal leading-[1.02] tracking-tight text-[#F5F2EC] mb-3 sm:mb-5"
           >
             <span>MODERN MENSWEAR.</span>
             <span className="block font-light italic text-[#EAE6DE]">DEFINED BY FORM.</span>
@@ -67,27 +64,27 @@ export default function Hero() {
           </motion.p>
         </div>
 
-        {/* Minimal Architectural CTAs — No Glowing Buttons */}
+        {/* Minimal Architectural CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45 }}
-          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 shrink-0"
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full sm:w-auto"
         >
-          <Link href="/shop">
+          <Link href="/shop" className="w-full sm:w-auto">
             <button
               type="button"
-              className="h-[50px] px-8 bg-[#F5F2EC] hover:bg-[#FFFFFF] text-[#111111] font-sans text-xs uppercase tracking-[0.22em] font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+              className="h-[46px] sm:h-[50px] px-6 sm:px-8 bg-[#F5F2EC] hover:bg-[#FFFFFF] text-[#111111] font-sans text-xs uppercase tracking-[0.2em] font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
             >
               <span>SHOP THE COLLECTION</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </Link>
 
-          <Link href="/new-arrivals">
+          <Link href="/new-arrivals" className="w-full sm:w-auto">
             <button
               type="button"
-              className="h-[50px] px-8 bg-transparent hover:bg-[#F5F2EC]/10 border border-[#F5F2EC]/40 text-[#F5F2EC] font-sans text-xs uppercase tracking-[0.22em] font-medium transition-colors flex items-center justify-center cursor-pointer w-full sm:w-auto"
+              className="h-[46px] sm:h-[50px] px-6 sm:px-8 bg-transparent hover:bg-[#F5F2EC]/10 border border-[#F5F2EC]/40 text-[#F5F2EC] font-sans text-xs uppercase tracking-[0.2em] font-medium transition-colors flex items-center justify-center cursor-pointer w-full sm:w-auto"
             >
               <span>EXPLORE NEW ARRIVALS</span>
             </button>

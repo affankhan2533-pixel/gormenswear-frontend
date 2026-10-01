@@ -57,7 +57,20 @@ export default function ProductEditorPage() {
   const [form, setForm] = useState(null);
 
   useEffect(() => {
-    setCategories(categoriesService.getAll());
+    async function loadData() {
+      try {
+        const res = await fetch("/api/categories");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.categories)) {
+            setCategories(json.categories);
+            return;
+          }
+        }
+      } catch (e) {}
+      setCategories(categoriesService.getAll());
+    }
+    loadData();
     setCollections(collectionsService.getAll());
   }, []);
 
@@ -168,6 +181,9 @@ export default function ProductEditorPage() {
 
       const updated = await productService.updateProduct(productId, {
         ...form,
+        price: form.price !== "" && form.price !== undefined && form.price !== null ? Number(form.price) : 0,
+        compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
+        stock: form.stock !== "" && form.stock !== undefined ? parseInt(form.stock, 10) : 0,
         category: cat?.name || form.category,
         categorySlug: cat?.slug || form.categorySlug || "",
         subcategoryId: form.subcategoryId || null,
@@ -201,6 +217,9 @@ export default function ProductEditorPage() {
 
       const updated = await productService.updateProduct(productId, {
         ...form,
+        price: form.price !== "" && form.price !== undefined && form.price !== null ? Number(form.price) : 0,
+        compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
+        stock: form.stock !== "" && form.stock !== undefined ? parseInt(form.stock, 10) : 0,
         status: "Active",
         visibility: "Published",
         category: cat?.name || form.category,
@@ -705,10 +724,87 @@ export default function ProductEditorPage() {
           </div>
         </div>
 
-        {/* 6. Publishing */}
+        {/* 6. Import & Origin */}
         <div className={SECTION}>
           <h2 className="text-sm font-bold text-[#E8E4DF] flex items-center gap-2">
             <span className="w-5 h-5 rounded-full bg-[#C8A45D]/20 text-[#C8A45D] text-xs flex items-center justify-center font-bold">6</span>
+            Import &amp; Origin
+          </h2>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Imported Product toggle */}
+            <div>
+              <label className={LABEL}>Imported Product</label>
+              <div className="flex gap-2 mt-1">
+                <button
+                  type="button"
+                  onClick={() => set("isImported", true)}
+                  className={`flex-1 py-2.5 rounded-[9px] border text-xs font-semibold transition-all cursor-pointer ${
+                    form.isImported
+                      ? "bg-[#C8A45D]/20 border-[#C8A45D] text-[#C8A45D]"
+                      : "bg-[#0D0D0D] border-[#222] text-[#555] hover:text-[#E8E4DF] hover:border-[#333]"
+                  }`}
+                >
+                  YES
+                </button>
+                <button
+                  type="button"
+                  onClick={() => set("isImported", false)}
+                  className={`flex-1 py-2.5 rounded-[9px] border text-xs font-semibold transition-all cursor-pointer ${
+                    !form.isImported
+                      ? "bg-[#1A1A1A] border-[#444] text-[#E8E4DF]"
+                      : "bg-[#0D0D0D] border-[#222] text-[#555] hover:text-[#E8E4DF] hover:border-[#333]"
+                  }`}
+                >
+                  NO
+                </button>
+              </div>
+            </div>
+
+            {/* Country of Origin */}
+            <div>
+              <label className={LABEL}>Country of Origin</label>
+              <input
+                type="text"
+                value={form.countryOfOrigin || ""}
+                onChange={(e) => set("countryOfOrigin", e.target.value)}
+                placeholder='e.g. Imported'
+                className={FIELD}
+              />
+              <p className="text-[10px] text-[#555] mt-1 leading-snug">
+                Use &quot;Imported&quot; if the specific country is unknown. Do not guess.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 pt-3 border-t border-[#1E1E1E]">
+            <div>
+              <label className={LABEL}>Fabric</label>
+              <input
+                type="text"
+                value={form.fabric || ""}
+                onChange={(e) => set("fabric", e.target.value)}
+                placeholder="e.g. 100% Cotton (only if known)"
+                className={FIELD}
+              />
+            </div>
+            <div>
+              <label className={LABEL}>Material</label>
+              <input
+                type="text"
+                value={form.material || ""}
+                onChange={(e) => set("material", e.target.value)}
+                placeholder="e.g. Waffle Knit (only if known)"
+                className={FIELD}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 7. Publishing */}
+        <div className={SECTION}>
+          <h2 className="text-sm font-bold text-[#E8E4DF] flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-[#C8A45D]/20 text-[#C8A45D] text-xs flex items-center justify-center font-bold">7</span>
             Publishing
           </h2>
 

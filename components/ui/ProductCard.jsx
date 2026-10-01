@@ -40,7 +40,7 @@ function ProductCardComponent({ product, className = "" }) {
 
   // Image resolution with smooth alternate on hover (300-500ms)
   const defaultImg =
-    product?.imageUrl || product?.image || (Array.isArray(product?.images) ? product.images[0] : "/images/products/gor-codset-burgundy-alo.webp");
+    product?.imageUrl || product?.image || (Array.isArray(product?.images) ? product.images[0] : "/images/categories/t-shirts/image.png");
   const alternateImg =
     Array.isArray(product?.images) && product.images.length > 1 ? product.images[1] : defaultImg;
 

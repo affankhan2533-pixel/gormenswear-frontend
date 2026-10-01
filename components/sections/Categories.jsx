@@ -11,43 +11,43 @@ const CATEGORIES = [
     index: "01",
     name: "T-SHIRTS",
     slug: "t-shirts",
-    image: "/images/categories/gor-model-streetwear.webp",
+    image: "/images/categories/t-shirts/image copy 21.png",
   },
   {
     index: "02",
     name: "SHIRTS",
     slug: "shirts",
-    image: "/images/lookbook/gor-lookbook-2.webp",
+    image: "/images/categories/shirts/image.png",
   },
   {
     index: "03",
     name: "POLOS",
     slug: "polos",
-    image: "/images/lookbook/image copy 4.png",
+    image: "/images/categories/t-shirts/image copy 18.png",
   },
   {
     index: "04",
     name: "PANTS",
     slug: "pants",
-    image: "/images/products/gor-codset-beige-prada.webp",
+    image: "/images/categories/t-shirts/image copy 15.png",
   },
   {
     index: "05",
     name: "TROUSERS",
     slug: "trousers",
-    image: "/images/lookbook/image copy 5.png",
+    image: "/images/categories/t-shirts/image copy 8.png",
   },
   {
     index: "06",
     name: "JACKETS",
     slug: "jackets",
-    image: "/images/lookbook/image copy 6.png",
+    image: "/images/categories/t-shirts/image copy 19.png",
   },
   {
     index: "07",
     name: "JERSEYS",
     slug: "jerseys",
-    image: "/images/lookbook/image.png",
+    image: "/images/categories/jerseys/image copy 8.png",
   },
 ];
 
@@ -58,11 +58,11 @@ export default function Categories() {
   return (
     <section
       id="categories"
-      className="py-20 sm:py-28 lg:py-32 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+      className="py-12 sm:py-24 lg:py-32 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-12 sm:mb-16 pb-4 border-b border-[#D8D2C8]">
+        <div className="flex items-center justify-between mb-8 sm:mb-16 pb-4 border-b border-[#D8D2C8]">
           <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium">
             01 / DIRECTORY
           </span>
@@ -162,21 +162,23 @@ export default function Categories() {
           </div>
         </div>
 
-        {/* ── Mobile: Editorial Vertical Directory ── */}
+        {/* ── Mobile: Editorial Full-Width Row Directory (Min 44px Touch Target) ── */}
         <div className="md:hidden divide-y divide-[#D8D2C8] border-b border-[#D8D2C8]">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
               href={`/category/${cat.slug}`}
-              className="flex items-center justify-between py-4 group active:opacity-70 transition-opacity"
+              className="min-h-[48px] py-3.5 flex items-center justify-between group active:bg-[#EFECE6] transition-colors px-1"
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs text-[#716D66]">{cat.index}</span>
-                <h3 className="font-editorial text-2xl font-normal text-[#111111]">
+                <span className="font-mono text-xs text-[#716D66] font-medium">{cat.index}</span>
+                <h3 className="font-editorial text-xl min-[360px]:text-2xl font-normal text-[#111111]">
                   {cat.name}
                 </h3>
               </div>
-              <ArrowRight className="w-4 h-4 text-[#716D66]" />
+              <div className="flex items-center gap-1.5 text-[#716D66] group-hover:text-[#111111]">
+                <ArrowRight className="w-4 h-4 stroke-[1.5]" />
+              </div>
             </Link>
           ))}
         </div>

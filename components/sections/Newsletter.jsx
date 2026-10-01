@@ -48,7 +48,7 @@ export default function Newsletter() {
   return (
     <section
       id="newsletter"
-      className="py-16 sm:py-20 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+      className="py-10 sm:py-16 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
       <div className="max-w-md mx-auto px-5 sm:px-6 text-center">
         {/* Minimal Typographic Header */}

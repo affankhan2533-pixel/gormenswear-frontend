@@ -36,11 +36,11 @@ export default function NewArrivals() {
   return (
     <section
       id="new-arrivals"
-      className="py-20 sm:py-28 lg:py-32 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+      className="py-12 sm:py-24 lg:py-32 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 sm:mb-16 pb-4 border-b border-[#D8D2C8] gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-16 pb-4 border-b border-[#D8D2C8] gap-4">
           <div>
             <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium block mb-2">
               02 / LATEST RELEASE
@@ -61,30 +61,30 @@ export default function NewArrivals() {
 
         {/* Fashion Lookbook + Editorial Commerce Composition */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
             <div className="md:col-span-7 aspect-[3/4] bg-[#E9E5DD] animate-pulse" />
             <div className="md:col-span-5 space-y-6">
               <div className="aspect-[3/4] bg-[#E9E5DD] animate-pulse" />
             </div>
           </div>
         ) : displayedArrivals.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-12">
             <p className="font-sans text-xs uppercase tracking-widest text-[#716D66]">
               Catalog currently updating.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start">
-            {/* Featured Primary Piece (Varied Scale — Dominant Presentation) */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-start">
+            {/* Featured Primary Piece */}
             {featuredProduct && (
               <div className="md:col-span-7">
                 <ProductCard product={featuredProduct} />
               </div>
             )}
 
-            {/* Secondary Pieces Stacked in Flanking Lookbook Grid */}
+            {/* Secondary Pieces Stacked */}
             {secondaryProducts.length > 0 && (
-              <div className="md:col-span-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-8">
+              <div className="md:col-span-5 grid grid-cols-1 gap-6 sm:gap-8">
                 {secondaryProducts.map((product) => (
                   <ProductCard
                     key={product.id || product._id || product.slug}

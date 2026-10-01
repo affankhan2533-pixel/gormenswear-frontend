@@ -8,18 +8,18 @@ export default function BrandStory() {
   return (
     <section
       id="brand-story"
-      className="py-20 sm:py-28 lg:py-36 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
+      className="py-12 sm:py-24 lg:py-36 bg-[#F5F2EC] text-[#111111] relative selection:bg-[#D8D2C8] selection:text-[#111111] border-t border-[#D8D2C8]"
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           {/* Left Column: Large Typography & Concise Narrative (6 Cols) */}
           <div className="lg:col-span-6 flex flex-col justify-center text-left">
-            <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium block mb-4">
+            <span className="font-sans text-[11px] uppercase tracking-[0.35em] text-[#716D66] font-medium block mb-3">
               04 / MANIFESTO
             </span>
 
             {/* Large Editorial Headline */}
-            <h2 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-normal leading-[1.04] tracking-tight text-[#111111] mb-6 sm:mb-8">
+            <h2 className="font-editorial text-3xl min-[360px]:text-4xl sm:text-6xl lg:text-7xl font-normal leading-[1.04] tracking-tight text-[#111111] mb-4 sm:mb-8">
               HONEST SILHOUETTES. <br />
               <span className="italic font-light text-[#716D66]">DEFINED BY DISCIPLINE.</span>
             </h2>
@@ -48,7 +48,7 @@ export default function BrandStory() {
           <div className="lg:col-span-6 relative">
             <div className="relative aspect-[4/5] w-full rounded-[2px] overflow-hidden bg-[#E9E5DD] border border-[#D8D2C8] shadow-[0_8px_30px_rgba(17,17,17,0.06)]">
               <Image
-                src="/images/categories/image.png"
+                src="/images/lookbook/gor-lookbook-8.webp"
                 alt="GOR Menswear Editorial Campaign"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"

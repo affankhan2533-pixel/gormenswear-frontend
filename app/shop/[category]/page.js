@@ -57,6 +57,11 @@ const CATEGORY_EDITORIAL_META = {
     description: "Athletic mesh silhouettes, collegiate graphics, and modern streetwear.",
     index: "07 / COLLECTION",
   },
+  uncategorized: {
+    name: "UNCATEGORIZED",
+    description: "Curated multi-piece ensembles and specialized silhouettes.",
+    index: "08 / COLLECTION",
+  },
 };
 
 const AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -83,13 +88,13 @@ function CategoryContent({ categoryParam }) {
   const [inStockOnly, setInStockOnly] = useState(false);
 
   // Price & Grid Density
-  const [priceLimit, setPriceLimit] = useState(1000);
+  const [priceLimit, setPriceLimit] = useState(50000);
   const [gridCols, setGridCols] = useState(4);
 
   // UI state
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [visibleCount, setVisibleCount] = useState(48);
 
   // Normalized category slug
   const normalizedCategory = (categoryParam || "t-shirts").toLowerCase().trim();
@@ -110,7 +115,10 @@ function CategoryContent({ categoryParam }) {
     async function fetchCatalog() {
       setLoading(true);
       try {
-        let catalogItems = await productService.getStorefrontProducts();
+        let catalogItems = await productService.getProductsByCategory(normalizedCategory);
+        if (!catalogItems || !catalogItems.length) {
+          catalogItems = await productService.getStorefrontProducts();
+        }
         if (!catalogItems || !Array.isArray(catalogItems)) {
           catalogItems = [];
         }
@@ -149,11 +157,12 @@ function CategoryContent({ categoryParam }) {
     result = result.filter((p) => {
       const pCatSlug = (p.categorySlug || "").toLowerCase().replace(/[^a-z0-9]/g, "");
       const pCatName = (p.category || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const pCatId = String(p.categoryId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
       return (
         pCatSlug === catSlugNorm ||
         pCatName === catSlugNorm ||
-        pCatName.includes(catSlugNorm) ||
-        catSlugNorm.includes(pCatName)
+        pCatId === catSlugNorm ||
+        pCatId === `cat${catSlugNorm}`
       );
     });
 
@@ -310,6 +319,9 @@ function CategoryContent({ categoryParam }) {
 
   return (
     <div className="min-h-screen bg-[#F5F2EC] text-[#111111] flex flex-col selection:bg-[#111111] selection:text-[#F5F2EC]">
+      {/* ── STICKY NAVBAR ── */}
+      <Navbar />
+
       {/* ── 1. REFINED EDITORIAL COLLECTION HEADER (Section 4) ── */}
       <PlpHero
         title={categoryMeta.name}
@@ -325,7 +337,7 @@ function CategoryContent({ categoryParam }) {
 
       {/* ── 2. DYNAMIC SUBCATEGORY SUBNAVIGATION (Section 5) ── */}
       {subcategories.length > 0 && (
-        <nav aria-label="Subcategory Navigation" className="border-b border-[#D8D2C8] bg-[#F5F2EC] sticky top-16 z-30 overflow-x-auto scrollbar-none">
+        <nav aria-label="Subcategory Navigation" className="border-b border-[#D8D2C8] bg-[#F5F2EC] sticky top-[60px] sm:top-[68px] z-30 overflow-x-auto scrollbar-none">
           <div className="max-w-[1600px] mx-auto px-5 sm:px-8 lg:px-12 flex items-center gap-2 sm:gap-4 py-3">
             <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#716D66] shrink-0 mr-2 hidden sm:block">
               SILHOUETTES:

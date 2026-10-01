@@ -42,18 +42,25 @@ export default function StructuredData({ type = "Organization", data = {} }) {
       "@context": "https://schema.org",
       "@type": "Product",
       name: data.name,
-      image: data.image || data.images?.[0],
+      image: data.images && data.images.length > 0
+        ? data.images.map((img) => img.startsWith("http") ? img : `${baseUrl}${img}`)
+        : [data.imageUrl || data.image].filter(Boolean),
       description: data.description || "Elevated men's fashion engineered with precision standards.",
+      sku: data.sku || undefined,
       brand: {
         "@type": "Brand",
         name: "GOR Menswear",
       },
       offers: {
         "@type": "Offer",
-        priceCurrency: "USD",
+        priceCurrency: "INR",
         price: data.price,
-        availability: "https://schema.org/InStock",
-        url: `${baseUrl}/product/${data.id || data._id}`,
+        availability:
+          data.stock > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+        url: `${baseUrl}/product/${data.slug || data.id || data._id}`,
+        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       },
     };
   } else if (type === "BreadcrumbList" && data.items) {

@@ -38,6 +38,43 @@ export default function ProductAccordions({ product = {} }) {
             ) : (
               <p>Considered proportions and signature silhouette crafted for everyday wear.</p>
             )}
+
+            {/* Origin — only shown when explicitly set; never guesses */}
+            {product.isImported && product.countryOfOrigin && (
+              <div className="flex items-center gap-2 pt-1">
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#111111]">
+                  Country of Origin
+                </span>
+                <span className="font-mono text-[11px] text-[#716D66]">
+                  {product.countryOfOrigin}
+                </span>
+              </div>
+            )}
+
+            {/* Fabric — only shown when explicitly available */}
+            {product.fabric && (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#111111]">
+                  Fabric
+                </span>
+                <span className="font-mono text-[11px] text-[#716D66]">
+                  {product.fabric}
+                </span>
+              </div>
+            )}
+
+            {/* Material — only shown when explicitly available */}
+            {product.material && (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#111111]">
+                  Material
+                </span>
+                <span className="font-mono text-[11px] text-[#716D66]">
+                  {product.material}
+                </span>
+              </div>
+            )}
+
             {product.sku && (
               <p className="font-mono text-[11px] text-[#716D66]/80 pt-1">
                 ARCHIVE CODE: {product.sku}
@@ -45,6 +82,7 @@ export default function ProductAccordions({ product = {} }) {
             )}
           </div>
         )}
+
       </div>
 
       {/* ── 2. SIZING GUIDE ── */}

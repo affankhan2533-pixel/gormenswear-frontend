@@ -11,14 +11,14 @@ import SearchOverlay from "@/components/ui/SearchOverlay";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 
-const CATEGORIES_MENU = [
+const DEFAULT_CATEGORIES_MENU = [
   { name: "T-Shirts", href: "/category/t-shirts", image: "/images/categories/gor-model-streetwear.webp", count: "01" },
   { name: "Shirts", href: "/category/shirts", image: "/images/lookbook/gor-lookbook-2.webp", count: "02" },
-  { name: "Polos", href: "/category/polos", image: "/images/lookbook/image copy 4.png", count: "03" },
-  { name: "Pants", href: "/category/pants", image: "/images/products/gor-codset-beige-prada.webp", count: "04" },
-  { name: "Trousers", href: "/category/trousers", image: "/images/lookbook/image copy 5.png", count: "05" },
-  { name: "Jackets", href: "/category/jackets", image: "/images/lookbook/image copy 6.png", count: "06" },
-  { name: "Jerseys", href: "/category/jerseys", image: "/images/lookbook/image.png", count: "07" },
+  { name: "Polos", href: "/category/polos", image: "/images/lookbook/gor-lookbook-4.webp", count: "03" },
+  { name: "Pants", href: "/category/pants", image: "/images/lookbook/gor-lookbook-3.webp", count: "04" },
+  { name: "Trousers", href: "/category/trousers", image: "/images/lookbook/gor-lookbook-5.webp", count: "05" },
+  { name: "Jackets", href: "/category/jackets", image: "/images/lookbook/gor-lookbook-6.webp", count: "06" },
+  { name: "Jerseys", href: "/category/jerseys", image: "/images/lookbook/gor-lookbook-7.webp", count: "07" },
 ];
 
 export default function Navbar() {
@@ -26,11 +26,45 @@ export default function Navbar() {
   const { totalItemsCount, setIsCartOpen, wishlist } = useCart();
   const { user } = useAuth();
 
+  const [categoriesMenu, setCategoriesMenu] = useState(DEFAULT_CATEGORIES_MENU);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shopMenuOpen, setShopMenuOpen] = useState(false);
-  const [hoveredCat, setHoveredCat] = useState(CATEGORIES_MENU[0]);
+  const [hoveredCat, setHoveredCat] = useState(DEFAULT_CATEGORIES_MENU[0]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const res = await fetch("/api/categories");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.categories)) {
+            const LEGACY_CATEGORY_IDS = new Set(["cat-1", "cat-3", "cat-4", "cat-5", "cat-6", "cat-uncategorized"]);
+            const active = json.categories.filter(
+              (c) => c.status === "Active" && !LEGACY_CATEGORY_IDS.has(c.id)
+            );
+            if (active.length > 0) {
+              const mapped = active.map((c, i) => {
+                const existing = DEFAULT_CATEGORIES_MENU.find(
+                  (d) => d.name.toLowerCase() === c.name.toLowerCase() || d.href.includes(c.slug)
+                );
+                return {
+                  name: c.name,
+                  href: `/category/${c.slug}`,
+                  image: c.image || existing?.image || "/images/categories/gor-model-streetwear.webp",
+                  count: String(i + 1).padStart(2, "0"),
+                };
+              });
+              setCategoriesMenu(mapped);
+              setHoveredCat((prev) => mapped.find((m) => m.href === prev?.href) || mapped[0]);
+            }
+          }
+        }
+      } catch (err) {}
+    }
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -52,10 +86,10 @@ export default function Navbar() {
     <>
       <header
         onMouseLeave={() => setShopMenuOpen(false)}
-        className={`fixed top-0 left-0 right-0 z-[9990] transition-all duration-300 ${
+        className={`sticky top-0 left-0 right-0 z-[9990] w-full transition-all duration-300 ${
           isScrolled || shopMenuOpen
-            ? "bg-[#F5F2EC]/96 backdrop-blur-xl border-b border-[#D8D2C8] py-3.5 shadow-[0_2px_16px_rgba(17,17,17,0.03)]"
-            : "bg-[#F5F2EC]/85 backdrop-blur-md border-b border-[#D8D2C8]/70 py-4 sm:py-5"
+            ? "bg-[#F5F2EC]/98 backdrop-blur-xl border-b border-[#D8D2C8] py-3.5 shadow-[0_2px_16px_rgba(17,17,17,0.03)]"
+            : "bg-[#F5F2EC]/95 backdrop-blur-md border-b border-[#D8D2C8] py-3.5 sm:py-4"
         }`}
       >
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between">
@@ -210,7 +244,7 @@ export default function Navbar() {
                     SHOP BY SILHOUETTE
                   </span>
                   <div className="grid grid-cols-2 gap-y-3.5 gap-x-6">
-                    {CATEGORIES_MENU.map((cat) => (
+                    {categoriesMenu.map((cat) => (
                       <Link
                         key={cat.href}
                         href={cat.href}
@@ -311,7 +345,7 @@ export default function Navbar() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-2.5 pl-3 border-l-2 border-[#D8D2C8]">
-                  {CATEGORIES_MENU.map((cat) => (
+                  {categoriesMenu.map((cat) => (
                     <Link
                       key={cat.href}
                       href={cat.href}

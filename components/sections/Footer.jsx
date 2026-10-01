@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Lock,
   Globe,
   ArrowUp,
+  ChevronDown,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
@@ -70,26 +72,32 @@ const SUPPORT_LINKS = [
 ];
 
 export default function Footer() {
+  const [openSection, setOpenSection] = useState(null);
+
+  const toggleSection = (sec) => {
+    setOpenSection((prev) => (prev === sec ? null : sec));
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer className="bg-[#151515] text-[#D8D2C8] pt-16 sm:pt-20 pb-16 border-t border-[#262626] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        {/* Top Grid: Brand + SHOP + COMPANY + SUPPORT */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-10 pb-16 border-b border-[#262626]">
+    <footer className="bg-[#151515] text-[#D8D2C8] pt-12 sm:pt-20 pb-12 sm:pb-16 border-t border-[#262626] relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        {/* Top Grid: Brand + Links (Desktop Grid / Mobile Accordion) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10 pb-10 sm:pb-16 border-b border-[#262626]">
           {/* Brand Column */}
-          <div className="lg:col-span-2 flex flex-col justify-between">
+          <div className="lg:col-span-2 flex flex-col justify-between mb-4 md:mb-0">
             <div>
               <Logo size="lg" invert={true} className="items-start" />
-              <p className="mt-5 font-sans text-xs text-[#716D66] font-normal max-w-sm leading-relaxed tracking-wide">
+              <p className="mt-4 sm:mt-5 font-sans text-xs text-[#716D66] font-normal max-w-sm leading-relaxed tracking-wide">
                 Refined modern menswear defined by form, discipline, and everyday movement.
               </p>
             </div>
 
             {/* Social Icons */}
-            <div className="mt-8 flex items-center gap-2.5">
+            <div className="mt-6 sm:mt-8 flex items-center gap-2.5">
               {[
                 { type: "instagram", href: "https://www.instagram.com/gormenswear/", label: "Instagram" },
                 { type: "twitter", href: "https://twitter.com/gormenswear", label: "Twitter" },
@@ -110,17 +118,34 @@ export default function Footer() {
             </div>
           </div>
 
+          {/* ── Mobile Accordions (< md) / Desktop Columns (>= md) ── */}
+
           {/* Column 1: SHOP */}
-          <div>
-            <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em] mb-5">
-              SHOP
-            </h4>
-            <ul className="space-y-3 text-xs font-sans">
+          <div className="border-t border-[#262626] md:border-none pt-4 md:pt-0">
+            <button
+              type="button"
+              onClick={() => toggleSection("shop")}
+              className="w-full flex items-center justify-between md:cursor-default focus:outline-none mb-3 md:mb-5"
+            >
+              <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em]">
+                SHOP
+              </h4>
+              <ChevronDown
+                className={`w-4 h-4 text-[#716D66] md:hidden transition-transform duration-200 ${
+                  openSection === "shop" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <ul
+              className={`space-y-2.5 sm:space-y-3 text-xs font-sans ${
+                openSection === "shop" ? "block" : "hidden md:block"
+              }`}
+            >
               {SHOP_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   <Link
                     href={href}
-                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block"
+                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block py-0.5"
                   >
                     <span>{name}</span>
                   </Link>
@@ -130,16 +155,31 @@ export default function Footer() {
           </div>
 
           {/* Column 2: COMPANY */}
-          <div>
-            <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em] mb-5">
-              COMPANY
-            </h4>
-            <ul className="space-y-3 text-xs font-sans">
+          <div className="border-t border-[#262626] md:border-none pt-4 md:pt-0">
+            <button
+              type="button"
+              onClick={() => toggleSection("company")}
+              className="w-full flex items-center justify-between md:cursor-default focus:outline-none mb-3 md:mb-5"
+            >
+              <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em]">
+                COMPANY
+              </h4>
+              <ChevronDown
+                className={`w-4 h-4 text-[#716D66] md:hidden transition-transform duration-200 ${
+                  openSection === "company" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <ul
+              className={`space-y-2.5 sm:space-y-3 text-xs font-sans ${
+                openSection === "company" ? "block" : "hidden md:block"
+              }`}
+            >
               {COMPANY_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   <Link
                     href={href}
-                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block"
+                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block py-0.5"
                   >
                     <span>{name}</span>
                   </Link>
@@ -149,16 +189,31 @@ export default function Footer() {
           </div>
 
           {/* Column 3: SUPPORT */}
-          <div>
-            <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em] mb-5">
-              SUPPORT
-            </h4>
-            <ul className="space-y-3 text-xs font-sans">
+          <div className="border-t border-[#262626] md:border-none pt-4 md:pt-0">
+            <button
+              type="button"
+              onClick={() => toggleSection("support")}
+              className="w-full flex items-center justify-between md:cursor-default focus:outline-none mb-3 md:mb-5"
+            >
+              <h4 className="font-sans text-[11px] font-medium text-[#F5F2EC] uppercase tracking-[0.25em]">
+                SUPPORT
+              </h4>
+              <ChevronDown
+                className={`w-4 h-4 text-[#716D66] md:hidden transition-transform duration-200 ${
+                  openSection === "support" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <ul
+              className={`space-y-2.5 sm:space-y-3 text-xs font-sans ${
+                openSection === "support" ? "block" : "hidden md:block"
+              }`}
+            >
               {SUPPORT_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   <Link
                     href={href}
-                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block"
+                    className="text-[#716D66] hover:text-[#F5F2EC] transition-colors inline-block py-0.5"
                   >
                     <span>{name}</span>
                   </Link>

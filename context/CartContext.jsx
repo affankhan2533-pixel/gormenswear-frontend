@@ -67,7 +67,7 @@ export function CartProvider({ children }) {
       product.image ||
       (Array.isArray(product.images) && product.images[0]) ||
       product.imageUrl ||
-      "/images/products/gor-codset-burgundy-alo.webp";
+      "/images/categories/t-shirts/image.png";
 
     const prodId = product.id || product._id;
 

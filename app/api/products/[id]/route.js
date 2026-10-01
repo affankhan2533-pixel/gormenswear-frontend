@@ -23,7 +23,7 @@ export async function GET(request, context) {
       product = await productService.getProduct(idOrSlug);
     } else {
       // Storefront: only return Active + Published products
-      product = getProductById(idOrSlug);
+      product = await getProductById(idOrSlug);
       // fallback to productService (still respects visibility filter via db.js)
       if (!product) {
         const p = await productService.getProduct(idOrSlug);
@@ -40,7 +40,7 @@ export async function GET(request, context) {
       );
     }
 
-    const related = isAdmin ? [] : getRelatedProducts(product.id || idOrSlug, 4);
+    const related = isAdmin ? [] : await getRelatedProducts(product.id || idOrSlug, 4);
 
     return NextResponse.json({ success: true, product, related });
   } catch (err) {

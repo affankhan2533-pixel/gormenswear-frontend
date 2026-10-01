@@ -19,7 +19,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
   const isWishlisted = wishlist.includes(product.id || product._id);
   const images = product.images?.length > 0
     ? product.images
-    : [product.image || product.img1 || "/images/products/gor-codset-burgundy-alo.webp"];
+    : [product.image || product.img1 || "/images/categories/t-shirts/image copy 21.png"];
   
   const currentImg = images[selectedImgIndex] || images[0];
   const availableSizes = product.sizes?.length > 0 ? product.sizes : ["XS", "S", "M", "L", "XL", "XXL"];

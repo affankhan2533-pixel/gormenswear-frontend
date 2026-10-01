@@ -46,7 +46,20 @@ export default function AddProductPage() {
   });
 
   useEffect(() => {
-    setCategories(categoriesService.getAll());
+    async function loadData() {
+      try {
+        const res = await fetch("/api/categories");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.categories)) {
+            setCategories(json.categories);
+            return;
+          }
+        }
+      } catch (e) {}
+      setCategories(categoriesService.getAll());
+    }
+    loadData();
     setCollections(collectionsService.getAll());
   }, []);
 
@@ -170,8 +183,8 @@ export default function AddProductPage() {
         description: form.description.trim(),
         imageUrl: form.imageUrl || form.images[0] || "/images/lookbook/gor-lookbook-1.webp",
         images: form.images.length > 0 ? form.images : ["/images/lookbook/gor-lookbook-1.webp"],
-        price: parseFloat(form.price),
-        compareAtPrice: form.compareAtPrice ? parseFloat(form.compareAtPrice) : null,
+        price: Number(form.price),
+        compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
         categoryId: form.categoryId || null,
         category: cat?.name || "",
         categorySlug: cat?.slug || "",
