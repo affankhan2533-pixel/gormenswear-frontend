@@ -108,7 +108,7 @@ export default function LifestyleBanner() {
                 className="w-full h-full object-cover filter brightness-[1.05] contrast-[1.04]"
                 style={{ objectPosition: "center 8%" }}
               >
-                <source src="/video.mp4/Make_more_different_angle_1080p_202607260353.mp4" type="video/mp4" />
+                <source src="/videos/make-more-angle.mp4" type="video/mp4" />
                 <source src="/videos/hero-campaign-2.mp4" type="video/mp4" />
               </motion.video>
 
