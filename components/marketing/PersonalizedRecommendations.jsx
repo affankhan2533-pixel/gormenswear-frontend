@@ -5,6 +5,8 @@ import ProductCard from "@/components/ui/ProductCard";
 import { getRecentlyViewed } from "@/lib/recentlyViewed";
 import { useCart } from "@/context/CartContext";
 
+import { productService } from "@/lib/productService";
+
 export default function PersonalizedRecommendations({ currentProductId, category }) {
   const { wishlist, cart } = useCart();
   const [allProducts, setAllProducts] = useState([]);
@@ -13,12 +15,8 @@ export default function PersonalizedRecommendations({ currentProductId, category
   useEffect(() => {
     async function loadCatalog() {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        const res = await fetch(`${baseUrl}/api/products`);
-        const data = await res.json();
-        if (data.success) {
-          setAllProducts(data.data || []);
-        }
+        const prods = await productService.getStorefrontProducts();
+        setAllProducts(prods || []);
       } catch (e) {
         console.error("Failed to load recommendation catalog", e);
       } finally {

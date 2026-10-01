@@ -42,7 +42,8 @@ const CATEGORY_SEO = {
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://gormenswear.com";
 
 export async function generateMetadata({ params }) {
-  const { category } = await params;
+  const resolvedParams = params && typeof params.then === "function" ? await params : (params || {});
+  const category = resolvedParams?.category || "t-shirts";
   const slug = (category || "").toLowerCase().trim();
   const seo = CATEGORY_SEO[slug];
 

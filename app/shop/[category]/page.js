@@ -155,8 +155,10 @@ function CategoryContent({ categoryParam }) {
     // Filter strictly to this category
     const catSlugNorm = normalizedCategory.replace(/[^a-z0-9]/g, "");
     result = result.filter((p) => {
-      const pCatSlug = (p.categorySlug || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-      const pCatName = (p.category || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const pCatSlugStr = typeof p.categorySlug === "string" ? p.categorySlug : (p.category?.slug || "");
+      const pCatNameStr = typeof p.category === "string" ? p.category : (p.category?.name || "");
+      const pCatSlug = pCatSlugStr.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const pCatName = pCatNameStr.toLowerCase().replace(/[^a-z0-9]/g, "");
       const pCatId = String(p.categoryId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
       return (
         pCatSlug === catSlugNorm ||
@@ -168,10 +170,12 @@ function CategoryContent({ categoryParam }) {
 
     // Subcategory Filter
     if (selectedSubcategory !== "all") {
-      const subSlugNorm = selectedSubcategory.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const subSlugNorm = String(selectedSubcategory).toLowerCase().replace(/[^a-z0-9]/g, "");
       result = result.filter((p) => {
-        const pSubSlug = (p.subcategorySlug || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        const pSubName = (p.subcategory || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const pSubSlugStr = typeof p.subcategorySlug === "string" ? p.subcategorySlug : (p.subcategory?.slug || "");
+        const pSubNameStr = typeof p.subcategory === "string" ? p.subcategory : (p.subcategory?.name || "");
+        const pSubSlug = pSubSlugStr.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const pSubName = pSubNameStr.toLowerCase().replace(/[^a-z0-9]/g, "");
         return pSubSlug === subSlugNorm || pSubName === subSlugNorm || pSubName.includes(subSlugNorm);
       });
     }
@@ -179,12 +183,16 @@ function CategoryContent({ categoryParam }) {
     // Search Query Filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (p) =>
-          (p.name || "").toLowerCase().includes(q) ||
-          (p.subcategory || "").toLowerCase().includes(q) ||
-          (p.description && p.description.toLowerCase().includes(q))
-      );
+      result = result.filter((p) => {
+        const nameStr = typeof p.name === "string" ? p.name : String(p.name || "");
+        const subStr = typeof p.subcategory === "string" ? p.subcategory : (p.subcategory?.name || "");
+        const descStr = typeof p.description === "string" ? p.description : String(p.description || "");
+        return (
+          nameStr.toLowerCase().includes(q) ||
+          subStr.toLowerCase().includes(q) ||
+          descStr.toLowerCase().includes(q)
+        );
+      });
     }
 
     // Size Filter

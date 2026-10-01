@@ -8,6 +8,8 @@ import ProductCard from "@/components/ui/ProductCard";
 import FeaturedProductCard from "@/components/ui/FeaturedProductCard";
 import { BlurReveal, Stagger, ScaleStaggerItem } from "@/components/ui/Motion";
 
+import { productService } from "@/lib/productService";
+
 const CURATED_BEST_SELLERS = [
   {
     id: "p2",
@@ -69,11 +71,9 @@ export default function BestSellers() {
   useEffect(() => {
     async function fetchBestSellers() {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        const res = await fetch(`${baseUrl}/api/products?category=codset`);
-        const data = await res.json();
-        if (data.success && data.data.length >= 4) {
-          const formatted = data.data.slice(0, 5).map((item, idx) => ({
+        const data = await productService.getStorefrontProducts();
+        if (Array.isArray(data) && data.length >= 4) {
+          const formatted = data.slice(0, 5).map((item, idx) => ({
             ...item,
             images: item.images?.length ? item.images : CURATED_BEST_SELLERS[idx % CURATED_BEST_SELLERS.length].images,
           }));

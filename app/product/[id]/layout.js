@@ -1,32 +1,23 @@
 // Server-side layout — generates per-product dynamic SEO metadata from MongoDB Atlas
 // The page.js inside is "use client" so metadata must live here.
 
+import { productService } from "@/lib/productService";
+
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://gormenswear.com";
 
 export async function generateMetadata({ params }) {
-  const { id } = await params;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const resolvedParams = params && typeof params.then === "function" ? await params : (params || {});
+  const id = resolvedParams?.id;
+
+  if (!id) {
+    return {
+      title: "Product — GOR Menswear",
+      description: "Premium imported menswear at GOR Menswear.",
+    };
+  }
 
   try {
-    // Try slug first, then id
-    let product = null;
-    const slugRes = await fetch(`${apiUrl}/api/products/slug/${id}`, {
-      next: { revalidate: 3600 },
-    });
-    if (slugRes.ok) {
-      const d = await slugRes.json();
-      if (d.success && d.product) product = d.product;
-    }
-
-    if (!product) {
-      const idRes = await fetch(`${apiUrl}/api/products/${id}`, {
-        next: { revalidate: 3600 },
-      });
-      if (idRes.ok) {
-        const d = await idRes.json();
-        if (d.success && d.product) product = d.product;
-      }
-    }
+    const product = await productService.getProduct(id);
 
     if (!product) {
       return {
